@@ -1,6 +1,5 @@
 stages:
   - lint
-  - test
 
 .go_template:
   image: golang:1.25
@@ -18,7 +17,7 @@ cache:
     - $GOPATH/pkg/mod
   policy: pull-push
 
-golint:
+lint:
   extends: .go_template
   stage: lint
   script: make lint
