@@ -14,6 +14,9 @@ coverage/
 .DS_Store
 .fseventsd
 .git/
+.go/
+.gocache/
+.gomodcache/
 .LSOverride
 .Spotlight-V100
 .TemporaryItems
@@ -36,6 +39,8 @@ coverage/
 *.stackdump
 *.test
 $RECYCLE.BIN/
+bin/
+dist/
 ehthumbs_vista.db
 ehthumbs.db
 go.work
