@@ -1,0 +1,23 @@
+stages:
+  - lint
+
+.go_template:
+  image: golang:1.25
+  before_script:
+    - go mod download
+    - make install-deps
+    - export PATH="$PATH:$(go env GOPATH)/bin"
+
+cache:
+  key:
+    files:
+      - go.sum
+      - go.mod
+  paths:
+    - $GOPATH/pkg/mod
+  policy: pull-push
+
+lint:
+  extends: .go_template
+  stage: lint
+  script: make lint
