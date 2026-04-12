@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"auto-http-fetcher/pkg/uuid"
 	"errors"
+	"net/http"
 	"time"
 )
 
@@ -25,25 +25,24 @@ func (t ResponseType) IsValid() bool {
 }
 
 type Response struct {
-	ID         string
-	WebhookID  string
+	ID         int
+	WebhookID  int
 	Type       ResponseType
 	Status     ResponseStatus
 	StatusCode int
 	Body       []byte
-	Headers    map[string]string
+	Headers    http.Header
 	StartedAt  time.Time
 	FinishedAt *time.Time
 	Attempt    int
 	Duration   time.Duration
 }
 
-func NewResponse(webhookId string, t ResponseType) (*Response, error) {
+func NewResponse(webhookId int, t ResponseType) (*Response, error) {
 	if !t.IsValid() {
 		return nil, errors.New("invalid response type")
 	}
 	return &Response{
-		ID:        uuid.Generate(),
 		WebhookID: webhookId,
 		Type:      t,
 		Status:    PendingStatus,
@@ -52,7 +51,7 @@ func NewResponse(webhookId string, t ResponseType) (*Response, error) {
 	}, nil
 }
 
-func (r *Response) Complete(statusCode int, body []byte, headers map[string]string, duration time.Duration) {
+func (r *Response) Complete(statusCode int, body []byte, headers http.Header, duration time.Duration) {
 	now := time.Now()
 	r.FinishedAt = &now
 	r.StatusCode = statusCode
