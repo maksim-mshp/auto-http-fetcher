@@ -71,6 +71,6 @@ func (r *Response) Retry() {
 	r.FinishedAt = nil
 }
 
-// func (r *Response) IsRetryable() bool {
-// 	// return r.Attempt < MaxAttempt
-// }
+func (r *Response) IsRetryable(maxAttempts int) bool {
+	return r.Status != SuccessStatus && maxAttempts > r.Attempt
+}
