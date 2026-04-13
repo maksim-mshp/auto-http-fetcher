@@ -42,7 +42,9 @@ func (f *Fetcher) Fetch(ctx context.Context, wh WebhookDTO, t domain.ResponseTyp
 		statusCode, body, headers, duration, err := f.doRequest(ctx, wh)
 		if err != nil {
 			if !resp.IsRetryable(f.maxAttempts) {
-				f.repo.Save(ctx, resp)
+				if err := f.repo.Save(ctx, resp); err != nil {
+					return err
+				}
 				return err
 			}
 			resp.Retry()
