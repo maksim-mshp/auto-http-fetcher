@@ -6,9 +6,9 @@ import (
 )
 
 type ModuleRepository interface {
-	CreateModule(context.Context, domain.Module) (*domain.Module, error)
-	UpdateModule(context.Context, domain.Module) (*domain.Module, error)
+	CreateModule(ctx context.Context, module domain.Module) (*domain.Module, error)
+	UpdateModule(ctx context.Context, module domain.Module) (*domain.Module, error)
 	DeleteModule(ctx context.Context, moduleID string) error
 	GetModule(ctx context.Context, moduleID string) (*domain.Module, error)
-	GetModuleList(context.Context) ([]*domain.Module, error)
+	GetModuleList(ctx context.Context) ([]*domain.Module, error)
 }
