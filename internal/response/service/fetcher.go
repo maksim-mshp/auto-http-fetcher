@@ -62,7 +62,7 @@ func (f *Fetcher) Fetch(ctx context.Context, wh WebhookDTO, t domain.ResponseTyp
 func (f *Fetcher) doRequest(ctx context.Context, wh WebhookDTO) (int, []byte, http.Header, time.Duration, error) {
 	ctx, cancelCtx := context.WithTimeout(ctx, time.Duration(wh.Timeout))
 	defer cancelCtx()
-	req, err := http.NewRequest(wh.Method, wh.URL, bytes.NewReader(wh.Body))
+	req, err := http.NewRequestWithContext(ctx, wh.Method, wh.URL, bytes.NewReader(wh.Body))
 	if err != nil {
 		return 0, nil, nil, 0, err
 	}
@@ -72,7 +72,9 @@ func (f *Fetcher) doRequest(ctx context.Context, wh WebhookDTO) (int, []byte, ht
 	if err != nil {
 		return 0, nil, nil, 0, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, nil, nil, 0, err
