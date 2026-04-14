@@ -1,7 +1,8 @@
 package service
 
 import (
-	"auto-http-fetcher/internal/response/domain"
+	responseDomain "auto-http-fetcher/internal/response/domain"
+	webhookDomain "auto-http-fetcher/internal/webhook/domain"
 	"bytes"
 	"context"
 	"io"
@@ -9,23 +10,13 @@ import (
 	"time"
 )
 
-// потом поменяю на домен, который Влад написал
-type WebhookDTO struct {
-	ID      int
-	URL     string
-	Method  string
-	Body    []byte
-	Headers http.Header
-	Timeout int
-}
-
 type Fetcher struct {
-	repo        domain.Repository
+	repo        Repository
 	client      *http.Client
 	maxAttempts int
 }
 
-func NewFetcher(repo domain.Repository, maxAttempts int) *Fetcher {
+func NewFetcher(repo Repository, maxAttempts int) *Fetcher {
 	return &Fetcher{
 		repo:        repo,
 		maxAttempts: maxAttempts,
@@ -33,8 +24,8 @@ func NewFetcher(repo domain.Repository, maxAttempts int) *Fetcher {
 	}
 }
 
-func (f *Fetcher) Fetch(ctx context.Context, wh WebhookDTO, t domain.ResponseType) error {
-	resp, err := domain.NewResponse(wh.ID, t)
+func (f *Fetcher) Fetch(ctx context.Context, wh webhookDomain.Webhook, t responseDomain.ResponseType) error {
+	resp, err := responseDomain.NewResponse(wh.ID, t)
 	if err != nil {
 		return err
 	}
@@ -59,10 +50,10 @@ func (f *Fetcher) Fetch(ctx context.Context, wh WebhookDTO, t domain.ResponseTyp
 	return f.repo.Save(ctx, resp)
 }
 
-func (f *Fetcher) doRequest(ctx context.Context, wh WebhookDTO) (int, []byte, http.Header, time.Duration, error) {
+func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (int, []byte, http.Header, time.Duration, error) {
 	ctx, cancelCtx := context.WithTimeout(ctx, time.Duration(wh.Timeout))
 	defer cancelCtx()
-	req, err := http.NewRequestWithContext(ctx, wh.Method, wh.URL, bytes.NewReader(wh.Body))
+	req, err := http.NewRequestWithContext(ctx, wh.Method, wh.URL.String(), bytes.NewReader(wh.Body))
 	if err != nil {
 		return 0, nil, nil, 0, err
 	}
