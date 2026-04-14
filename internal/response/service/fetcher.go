@@ -51,7 +51,7 @@ func (f *Fetcher) Fetch(ctx context.Context, wh webhookDomain.Webhook, t respons
 }
 
 func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (int, []byte, http.Header, time.Duration, error) {
-	ctx, cancelCtx := context.WithTimeout(ctx, time.Duration(wh.Timeout))
+	ctx, cancelCtx := context.WithTimeout(ctx, wh.Timeout)
 	defer cancelCtx()
 	req, err := http.NewRequestWithContext(ctx, wh.Method, wh.URL.String(), bytes.NewReader(wh.Body))
 	if err != nil {
