@@ -1,9 +1,9 @@
-package dto
+package http
 
 import (
 	domainModule "auto-http-fetcher/internal/module/domain"
 	domainWebhook "auto-http-fetcher/internal/webhook/domain"
-	webhookDTO "auto-http-fetcher/internal/webhook/transport/rest/dto"
+	webhookDTO "auto-http-fetcher/internal/webhook/infra/http"
 )
 
 type ModuleDTO struct {
