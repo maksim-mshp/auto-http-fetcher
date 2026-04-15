@@ -2,11 +2,9 @@ package domain
 
 import (
 	"fmt"
-	"regexp"
 )
 
 const (
-	RFC5322EmailPattern   = `^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$`
 	UsernameMinLength     = 3
 	UsernameMaxLength     = 255
 	UserPasswordMinLength = 6
@@ -26,10 +24,6 @@ func ValidateUser(user *User) error {
 	}
 	if len(user.Name) > UsernameMaxLength {
 		return fmt.Errorf("user's name is too long")
-	}
-
-	if match, _ := regexp.MatchString(RFC5322EmailPattern, user.Email); !match {
-		return fmt.Errorf("invalid email")
 	}
 
 	if user.Password == "" {

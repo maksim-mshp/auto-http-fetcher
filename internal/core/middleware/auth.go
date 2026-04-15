@@ -9,9 +9,11 @@ import (
 	"strings"
 )
 
-type contextKey string
+type userContextKey struct {
+	name string
+}
 
-const UserContextKey contextKey = "user"
+var UserContextKey = userContextKey{name: "user"}
 
 func AuthMiddleware(authService *security.JWT) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -37,15 +39,16 @@ func AuthMiddleware(authService *security.JWT) func(http.Handler) http.Handler {
 			}
 
 			ctx := context.WithValue(r.Context(), UserContextKey, &domain.User{
-				ID:    claims.UserID,
-				Email: claims.Email,
+				ID: claims.UserID,
 			})
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
 
-func GetUserFromContext(ctx context.Context) (*domain.User, error) {
+// GetUserIDFromContext - возвращает домен пользователя
+// так называется, а возвращает domain.User, т.к. jwt.Claims содержит только UserID
+func GetUserIDFromContext(ctx context.Context) (*domain.User, error) {
 	user, ok := ctx.Value(UserContextKey).(*domain.User)
 	if !ok {
 		return nil, fmt.Errorf("user not found in context")

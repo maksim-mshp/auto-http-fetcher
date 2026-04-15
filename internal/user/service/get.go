@@ -9,7 +9,7 @@ import (
 
 func (u *UserService) Get(ctx context.Context, checkUser *domain.User) (string, error) {
 
-	user, err := u.userRepo.GetByEmail(ctx, checkUser.Email)
+	user, err := u.userRepo.GetByEmail(ctx, checkUser.Email.String())
 	if err != nil {
 		return "", err
 	}
@@ -18,7 +18,7 @@ func (u *UserService) Get(ctx context.Context, checkUser *domain.User) (string, 
 		return "", fmt.Errorf("incorrect password")
 	}
 
-	token, err := u.jwt.GenerateAccessToken(user.ID, user.Email)
+	token, err := u.jwt.GenerateAccessToken(user.ID)
 	if err != nil {
 		return "", err
 	}

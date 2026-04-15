@@ -1,8 +1,10 @@
 package domain
 
+import "net/mail"
+
 type User struct {
 	ID       int
 	Name     string
-	Email    string
+	Email    mail.Address
 	Password string
 }

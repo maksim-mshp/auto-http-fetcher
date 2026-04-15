@@ -20,15 +20,13 @@ func NewJWTService(secretKey string, accessTTL time.Duration) *JWT {
 }
 
 type Claims struct {
-	UserID int    `json:"user_id"`
-	Email  string `json:"email"`
+	UserID int `json:"user_id"`
 	jwt.RegisteredClaims
 }
 
-func (s *JWT) GenerateAccessToken(userID int, email string) (string, error) {
+func (s *JWT) GenerateAccessToken(userID int) (string, error) {
 	claims := Claims{
 		UserID: userID,
-		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.accessTTL)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
