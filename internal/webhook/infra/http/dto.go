@@ -2,7 +2,6 @@ package http
 
 import (
 	"auto-http-fetcher/internal/webhook/domain"
-	"net/http"
 	"net/url"
 	"time"
 )
@@ -14,10 +13,10 @@ type WebhookDTO struct {
 	Interval string `json:"interval"`
 	Timeout  string `json:"timeout"`
 
-	URL     string      `json:"url"`
-	Method  string      `json:"method"`
-	Headers http.Header `json:"headers"`
-	Body    []byte      `json:"body"`
+	URL     string              `json:"url"`
+	Method  string              `json:"method"`
+	Headers map[string][]string `json:"headers"`
+	Body    []byte              `json:"body"`
 }
 
 func (w *WebhookDTO) ToDomain() (*domain.Webhook, error) {
