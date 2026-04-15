@@ -9,8 +9,7 @@ service FetcherService {
 }
 
 message FetchRequest {
-    int64 webhook_id = 1;
-    string type = 2;
+    bytes webhook_data = 1;
 }
 
 message FetchResponse {
