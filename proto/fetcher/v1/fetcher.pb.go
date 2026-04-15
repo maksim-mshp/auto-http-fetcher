@@ -23,8 +23,7 @@ const (
 
 type FetchRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	WebhookId     int64                  `protobuf:"varint,1,opt,name=webhook_id,json=webhookId,proto3" json:"webhook_id,omitempty"`
-	Type          string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	WebhookData   []byte                 `protobuf:"bytes,1,opt,name=webhook_data,json=webhookData,proto3" json:"webhook_data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -59,18 +58,11 @@ func (*FetchRequest) Descriptor() ([]byte, []int) {
 	return file_proto_fetcher_v1_fetcher_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *FetchRequest) GetWebhookId() int64 {
+func (x *FetchRequest) GetWebhookData() []byte {
 	if x != nil {
-		return x.WebhookId
+		return x.WebhookData
 	}
-	return 0
-}
-
-func (x *FetchRequest) GetType() string {
-	if x != nil {
-		return x.Type
-	}
-	return ""
+	return nil
 }
 
 type FetchResponse struct {
@@ -122,11 +114,9 @@ var File_proto_fetcher_v1_fetcher_proto protoreflect.FileDescriptor
 const file_proto_fetcher_v1_fetcher_proto_rawDesc = "" +
 	"\n" +
 	"\x1eproto/fetcher/v1/fetcher.proto\x12\n" +
-	"fetcher.v1\"A\n" +
-	"\fFetchRequest\x12\x1d\n" +
-	"\n" +
-	"webhook_id\x18\x01 \x01(\x03R\twebhookId\x12\x12\n" +
-	"\x04type\x18\x02 \x01(\tR\x04type\")\n" +
+	"fetcher.v1\"1\n" +
+	"\fFetchRequest\x12!\n" +
+	"\fwebhook_data\x18\x01 \x01(\fR\vwebhookData\")\n" +
 	"\rFetchResponse\x12\x18\n" +
 	"\aattempt\x18\x01 \x01(\x03R\aattempt2N\n" +
 	"\x0eFetcherService\x12<\n" +
