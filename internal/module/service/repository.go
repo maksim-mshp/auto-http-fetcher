@@ -11,6 +11,4 @@ type ModuleRepository interface {
 	DeleteModule(ctx context.Context, moduleID int) error
 	GetModule(ctx context.Context, moduleID int) (*domain.Module, error)
 	GetModuleList(ctx context.Context) ([]*domain.Module, error)
-
-	NewModuleID(ctx context.Context) (int, error)
 }

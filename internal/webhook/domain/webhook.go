@@ -6,18 +6,9 @@ import (
 	"time"
 )
 
-type WebhookType string
-
-const (
-	ManualWebhook    WebhookType = "Manual"
-	ScheduledWebhook WebhookType = "Scheduled"
-)
-
 type Webhook struct {
 	ID          int
 	Description string
-
-	Type WebhookType
 
 	Interval time.Duration
 	Timeout  time.Duration

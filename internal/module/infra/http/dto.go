@@ -14,7 +14,7 @@ type ModuleDTO struct {
 	Webhooks    []*webhookDTO.WebhookDTO `json:"webhooks"`
 }
 
-func (m *ModuleDTO) ToDomain() domainModule.Module {
+func (m *ModuleDTO) ToDomain() (*domainModule.Module, error) {
 	module := domainModule.Module{
 		ID:          m.ID,
 		OwnerId:     m.OwnerId,
@@ -23,9 +23,13 @@ func (m *ModuleDTO) ToDomain() domainModule.Module {
 		Webhooks:    make([]*domainWebhook.Webhook, len(m.Webhooks)),
 	}
 	for i, webhook := range m.Webhooks {
-		module.Webhooks[i] = webhook.ToDomain()
+		webhookToDomain, err := webhook.ToDomain()
+		if err != nil {
+			return nil, err
+		}
+		module.Webhooks[i] = webhookToDomain
 	}
-	return module
+	return &module, nil
 }
 
 type ModuleListDTO struct {
