@@ -1,36 +1,29 @@
 package domain
 
 import (
-	"fmt"
+	coreHttp "auto-http-fetcher/internal/core/http"
 )
 
 const (
-	UsernameMinLength     = 3
-	UsernameMaxLength     = 255
-	UserPasswordMinLength = 6
+	UsernameMinLength     = 4
+	UsernameMaxLength     = 128
+	UserPasswordMinLength = 8
 )
 
 func ValidateUser(user *User) error {
 	if user == nil {
-		return fmt.Errorf("user is nil")
-	}
-
-	if user.Name == "" {
-		return fmt.Errorf("user's name is empty")
+		return coreHttp.NewValidationError("user", "user is nil")
 	}
 
 	if len(user.Name) < UsernameMinLength {
-		return fmt.Errorf("user's name is too short")
+		return coreHttp.NewValidationError("username", "username is too short")
 	}
 	if len(user.Name) > UsernameMaxLength {
-		return fmt.Errorf("user's name is too long")
+		return coreHttp.NewValidationError("username", "username is too long")
 	}
 
-	if user.Password == "" {
-		return fmt.Errorf("user's password is empty")
-	}
 	if len(user.Password) < UserPasswordMinLength {
-		return fmt.Errorf("password too short")
+		return coreHttp.NewValidationError("user password", "password is too short")
 	}
 	return nil
 }
