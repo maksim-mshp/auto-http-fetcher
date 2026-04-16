@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"time"
@@ -14,6 +15,7 @@ import (
 type Fetcher struct {
 	repo   Repository
 	client *http.Client
+	logger *slog.Logger
 }
 
 func NewFetcher(repo Repository) *Fetcher {
@@ -28,12 +30,24 @@ func (f *Fetcher) Fetch(ctx context.Context, wh webhookDomain.Webhook, t respons
 	if err != nil {
 		return err
 	}
-	statusCode, body, headers, duration, _ := f.doRequest(ctx, wh)
-	resp.Complete(statusCode, body, headers, duration)
+	res, reqErr := f.doRequest(ctx, wh)
+	if reqErr != nil {
+		f.logger.Error("webhook processing failed",
+			"webhook_id", wh.ID,
+			"url", wh.URL.String(),
+			"error", reqErr,
+		)
+	} else {
+		f.logger.Info("webhook processing success",
+			"webhook_id", wh.ID,
+			"status", res.StatusCode,
+		)
+	}
+	resp.Complete(res.StatusCode, res.Body, res.Headers, res.Duration)
 	return f.repo.Save(ctx, resp)
 }
 
-func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (int, []byte, http.Header, time.Duration, error) {
+func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (*responseDomain.Response, error) {
 	var lastErr error
 	const maxRetries = 3
 	for i := 0; i < maxRetries; i++ {
@@ -41,19 +55,30 @@ func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (int,
 		req, err := http.NewRequestWithContext(attemptCtx, wh.Method, wh.URL.String(), bytes.NewReader(wh.Body))
 		if err != nil {
 			cancel()
-			return 0, nil, nil, 0, err
+			return &responseDomain.Response{}, err
 		}
+
+		req.Header = wh.Headers.Clone()
+
 		start := time.Now()
 		resp, err := f.client.Do(req)
 		duration := time.Since(start)
+
 		if err != nil {
 			cancel()
 			lastErr = err
+
+			f.logger.Warn("request attempt failed",
+				"webhook_id", wh.ID,
+				"attempt", i+1,
+				"error", err,
+			)
+
 			if i < maxRetries-1 {
 				delay := time.Second * time.Duration(int(math.Pow(2, float64(i))))
 				select {
 				case <-ctx.Done():
-					return 0, nil, nil, 0, ctx.Err()
+					return &responseDomain.Response{}, ctx.Err()
 				case <-time.After(delay):
 					continue
 				}
@@ -64,9 +89,14 @@ func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (int,
 		resp.Body.Close()
 		cancel()
 		if err != nil {
-			return 0, nil, nil, 0, err
+			return &responseDomain.Response{}, err
 		}
-		return resp.StatusCode, body, resp.Header, duration, nil
+		return &responseDomain.Response{
+			StatusCode: resp.StatusCode,
+			Body:       body,
+			Headers:    resp.Header,
+			Duration:   duration,
+		}, nil
 	}
-	return 0, nil, nil, 0, lastErr
+	return &responseDomain.Response{}, lastErr
 }
