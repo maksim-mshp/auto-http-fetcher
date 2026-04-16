@@ -47,7 +47,7 @@ func NewResponse(webhookId int, t ResponseType) (*Response, error) {
 		Type:      t,
 		Status:    PendingStatus,
 		StartedAt: time.Now(),
-		Attempt:   1,
+		Attempt:   0,
 	}, nil
 }
 
@@ -63,14 +63,4 @@ func (r *Response) Complete(statusCode int, body []byte, headers http.Header, du
 	} else {
 		r.Status = FailedStatus
 	}
-}
-
-func (r *Response) Retry() {
-	r.Attempt++
-	r.Status = PendingStatus
-	r.FinishedAt = nil
-}
-
-func (r *Response) IsRetryable(maxAttempts int) bool {
-	return r.Status != SuccessStatus && maxAttempts > r.Attempt
 }

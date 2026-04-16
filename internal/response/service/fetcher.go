@@ -5,6 +5,7 @@ import (
 	webhookDomain "auto-http-fetcher/internal/webhook/domain"
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -18,9 +19,8 @@ type Fetcher struct {
 
 func NewFetcher(repo Repository, maxAttempts int) *Fetcher {
 	return &Fetcher{
-		repo:        repo,
-		maxAttempts: maxAttempts,
-		client:      &http.Client{},
+		repo:   repo,
+		client: &http.Client{},
 	}
 }
 
@@ -29,25 +29,15 @@ func (f *Fetcher) Fetch(ctx context.Context, wh webhookDomain.Webhook, t respons
 	if err != nil {
 		return err
 	}
-	for {
-		statusCode, body, headers, duration, err := f.doRequest(ctx, wh)
-		if err != nil {
-			if !resp.IsRetryable(f.maxAttempts) {
-				if err := f.repo.Save(ctx, resp); err != nil {
-					return err
-				}
-				return err
-			}
-			resp.Retry()
-		} else {
-			resp.Complete(statusCode, body, headers, duration)
-			if !resp.IsRetryable(f.maxAttempts) {
-				break
-			}
-			resp.Retry()
+	statusCode, body, headers, duration, reqErr := f.doRequest(ctx, wh)
+	resp.Complete(statusCode, body, headers, duration)
+	if saveErr := f.repo.Save(ctx, resp); saveErr != nil {
+		if reqErr != nil {
+			return fmt.Errorf("doRequest error: %w, Save error: %w", reqErr, saveErr)
 		}
+		return saveErr
 	}
-	return f.repo.Save(ctx, resp)
+	return nil
 }
 
 func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (int, []byte, http.Header, time.Duration, error) {
