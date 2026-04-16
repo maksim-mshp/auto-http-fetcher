@@ -86,7 +86,7 @@ func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (*res
 			break
 		}
 		body, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		cancel()
 		if err != nil {
 			return &responseDomain.Response{}, err
