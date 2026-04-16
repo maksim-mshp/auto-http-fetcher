@@ -12,12 +12,11 @@ import (
 )
 
 type Fetcher struct {
-	repo        Repository
-	client      *http.Client
-	maxAttempts int
+	repo   Repository
+	client *http.Client
 }
 
-func NewFetcher(repo Repository, maxAttempts int) *Fetcher {
+func NewFetcher(repo Repository) *Fetcher {
 	return &Fetcher{
 		repo:   repo,
 		client: &http.Client{},
