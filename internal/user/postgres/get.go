@@ -1,11 +1,13 @@
 package postgres
 
 import (
-	httpCore "auto-http-fetcher/internal/core/http"
-	"auto-http-fetcher/internal/user/domain"
 	"context"
 	"errors"
+
 	"github.com/jackc/pgx/v5"
+
+	httpCore "auto-http-fetcher/internal/core/http"
+	"auto-http-fetcher/internal/user/domain"
 )
 
 func (ur *PGUserRepo) GetByID(ctx context.Context, userID int) (*domain.User, error) {
