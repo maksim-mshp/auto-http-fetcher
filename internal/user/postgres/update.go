@@ -1,12 +1,14 @@
 package postgres
 
 import (
-	httpCore "auto-http-fetcher/internal/core/http"
-	"auto-http-fetcher/internal/user/domain"
 	"context"
 	"errors"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+
+	httpCore "auto-http-fetcher/internal/core/http"
+	"auto-http-fetcher/internal/user/domain"
 )
 
 func (ur *PGUserRepo) Update(ctx context.Context, user *domain.User) (*domain.User, error) {

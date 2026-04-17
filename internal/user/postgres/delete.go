@@ -1,8 +1,9 @@
 package postgres
 
 import (
-	httpCore "auto-http-fetcher/internal/core/http"
 	"context"
+
+	httpCore "auto-http-fetcher/internal/core/http"
 )
 
 func (ur *PGUserRepo) Delete(ctx context.Context, id int) error {
