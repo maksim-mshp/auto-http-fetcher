@@ -9,7 +9,7 @@ import (
 
 func (pg *PGResponseRepo) FindByWebhookID(ctx context.Context, webhookID string) ([]*domain.Response, error) {
 	var responses []*domain.Response
-	query := `SELECT * FROM responses WHERE webhook_id = $1`
+	query := `SELECT id, webhook_id, type, status, status_code, body, headers, started_at, finished_at, attempt, duration FROM responses WHERE webhook_id = $1`
 
 	rows, err := pg.pool.Query(ctx, query, webhookID)
 
