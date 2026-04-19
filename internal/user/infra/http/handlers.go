@@ -7,7 +7,6 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"net/mail"
 )
 
 type UserHandlers struct {
@@ -26,14 +25,8 @@ func (uh *UserHandlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userEmail, err := mail.ParseAddress(LoginReq.Email)
-	if err != nil {
-		coreHttp.SendErrorJSON(uh.logger, w, coreHttp.NewValidationError("EMAIL_ERROR", err.Error()))
-		return
-	}
-
 	token, err := uh.userService.Get(r.Context(), &domain.User{
-		Email:    userEmail,
+		Email:    LoginReq.Email,
 		Password: LoginReq.Password,
 	})
 	if err != nil {
@@ -57,16 +50,8 @@ func (uh *UserHandlers) Register(w http.ResponseWriter, r *http.Request) {
 		coreHttp.SendJSON(uh.logger, w, err, http.StatusBadRequest)
 		return
 	}
-
-	userEmail, err := mail.ParseAddress(RegisterReq.Email)
-	if err != nil {
-		coreHttp.SendJSON(uh.logger, w, coreHttp.NewValidationError("EMAIL_ERROR", err.Error()),
-			http.StatusBadRequest)
-		return
-	}
-
 	user, err := uh.userService.Create(r.Context(), &domain.User{
-		Email:    userEmail,
+		Email:    RegisterReq.Email,
 		Password: RegisterReq.Password,
 		Name:     RegisterReq.Name,
 	})
@@ -80,5 +65,8 @@ func (uh *UserHandlers) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	coreHttp.SendJSON(uh.logger, w, user, http.StatusCreated)
+	coreHttp.SendJSON(uh.logger, w, &UserRegisterResponse{
+		Email: user.Email,
+		Name:  user.Name,
+	}, http.StatusCreated)
 }
