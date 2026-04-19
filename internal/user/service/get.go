@@ -9,14 +9,14 @@ import (
 
 func (u *UserService) Get(ctx context.Context, checkUser *domain.User) (string, error) {
 
-	user, err := u.userRepo.GetByEmail(ctx, checkUser.Email.String())
+	user, err := u.userRepo.GetByEmail(ctx, checkUser.Email)
 	if err != nil {
 		u.logger.Error("get user by email error", "error", err)
 		return "", err
 	}
 
 	if ok := security.Verify(user.Password, checkUser.Password); !ok {
-		u.logger.Error("verify user password error", "user email", user.Email.String())
+		u.logger.Error("verify user password error", "user email", user.Email)
 		return "", coreHttp.ErrVerificationFailed
 	}
 
@@ -26,6 +26,6 @@ func (u *UserService) Get(ctx context.Context, checkUser *domain.User) (string, 
 		return "", coreHttp.ErrInternal
 	}
 
-	u.logger.Info("get user success", "user email", user.Email.String())
+	u.logger.Info("get user success", "user email", user.Email)
 	return token, nil
 }
