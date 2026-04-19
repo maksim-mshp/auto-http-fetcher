@@ -2,6 +2,7 @@ package domain
 
 import (
 	coreHttp "auto-http-fetcher/internal/core/http"
+	"net/mail"
 )
 
 const (
@@ -20,6 +21,10 @@ func ValidateUser(user *User) error {
 	}
 	if len(user.Name) > UsernameMaxLength {
 		return coreHttp.NewValidationError("username", "username is too long")
+	}
+
+	if _, err := mail.ParseAddress(user.Email); err != nil {
+		return coreHttp.NewValidationError("email", "email is invalid")
 	}
 
 	if len(user.Password) < UserPasswordMinLength {
