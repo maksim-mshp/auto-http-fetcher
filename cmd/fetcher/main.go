@@ -1,4 +1,4 @@
-package fetcher
+package main
 
 import (
 	"auto-http-fetcher/internal/core/config"
@@ -17,7 +17,7 @@ import (
 func main() {
 	config.LoadDotEnv(".env")
 	postgresURL := config.MustGet("POSTGRES_URL")
-	grpcPort := config.Get("GRPC_PORT", ":50053")
+	grpcPort := config.Get("GRPC_PORT", ":50051")
 	env := config.Get("ENV", "Development")
 
 	ctx := context.Background()
