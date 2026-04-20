@@ -15,7 +15,9 @@ import (
 )
 
 func main() {
-	config.LoadDotEnv(".env")
+	if err := config.LoadDotEnv(".env"); err != nil {
+		panic(err)
+	}
 	postgresURL := config.MustGet("POSTGRES_URL")
 	grpcPort := config.Get("GRPC_PORT", ":50051")
 	env := config.Get("ENV", "Development")
