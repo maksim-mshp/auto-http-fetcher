@@ -25,14 +25,14 @@ func NewFetcher(repo Repository, logger *slog.Logger) *Fetcher {
 	}
 }
 
-func (f *Fetcher) Fetch(ctx context.Context, wh webhookDomain.Webhook, t responseDomain.ResponseType) error {
+func (f *Fetcher) Fetch(ctx context.Context, wh webhookDomain.Webhook, t responseDomain.ResponseType) (*responseDomain.Response, error) {
 	resp, err := responseDomain.NewResponse(wh.ID, t)
 	if err != nil {
 		f.logger.Error("creating response error",
 			"webhook_id", wh.ID,
 			"error", err,
 		)
-		return err
+		return nil, err
 	}
 	res, reqErr := f.doRequest(ctx, wh)
 	if reqErr != nil {
@@ -48,7 +48,7 @@ func (f *Fetcher) Fetch(ctx context.Context, wh webhookDomain.Webhook, t respons
 		)
 	}
 	resp.Complete(res.StatusCode, res.Body, res.Headers, res.Duration)
-	return f.repo.Save(ctx, resp)
+	return resp, f.repo.Save(ctx, resp)
 }
 
 func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (responseDomain.Response, error) {
