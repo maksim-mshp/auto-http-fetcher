@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: auto-http-fetcher-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auto-http-fetcher
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fetcher-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: auto-http-fetcher-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - fetcher-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  analytics:
+    image: analytics:latest
+    container_name: auto-http-fetcher-analytics
+    build:
+      context: .
+      dockerfile: Dockerfile.analytics
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
+      REDIS_URL: redis://redis:6379
+      ANALYTICS_PORT: :8080
+      ANALYTICS_TTL: 60
+      ENV: Development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - fetcher-network
+    restart: unless-stopped
+
+  fetcher:
+    image: fetcher:latest
+    container_name: auto-http-fetcher-fetcher
+    build:
+      context: .
+      dockerfile: Dockerfile.fetcher
+    ports:
+      - "50051:50051"
+    environment:
+      POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
+      GRPC_PORT: :50051
+      ENV: Development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fetcher-network
+    restart: unless-stopped
+
+networks:
+  fetcher-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
