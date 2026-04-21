@@ -5,6 +5,7 @@ import (
 	webhookDomain "auto-http-fetcher/internal/webhook/domain"
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -34,7 +35,14 @@ func (f *Fetcher) Fetch(ctx context.Context, wh webhookDomain.Webhook, t respons
 		)
 		return nil, err
 	}
-	res, reqErr := f.doRequest(ctx, wh)
+	requestCtx := ctx
+	cancel := func() {}
+	if wh.Timeout > 0 {
+		requestCtx, cancel = context.WithTimeout(ctx, wh.Timeout)
+	}
+	defer cancel()
+
+	res, reqErr := f.doRequest(requestCtx, wh)
 	if reqErr != nil {
 		f.logger.Error("webhook processing failed",
 			"webhook_id", wh.ID,
@@ -48,7 +56,16 @@ func (f *Fetcher) Fetch(ctx context.Context, wh webhookDomain.Webhook, t respons
 		)
 	}
 	resp.Complete(res.StatusCode, res.Body, res.Headers, res.Duration)
-	return resp, f.repo.Save(ctx, resp)
+	if err := f.repo.Save(ctx, resp); err != nil {
+		return resp, err
+	}
+	if reqErr != nil {
+		return resp, reqErr
+	}
+	if resp.Status == responseDomain.FailedStatus {
+		return resp, fmt.Errorf("webhook returned status code %d", resp.StatusCode)
+	}
+	return resp, nil
 }
 
 func (f *Fetcher) doRequest(ctx context.Context, wh webhookDomain.Webhook) (responseDomain.Response, error) {
