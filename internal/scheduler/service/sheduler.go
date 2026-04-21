@@ -1,6 +1,7 @@
 package service
 
 import (
+	responseDomain "auto-http-fetcher/internal/response/domain"
 	"auto-http-fetcher/internal/scheduler/domain"
 	webhookDomain "auto-http-fetcher/internal/webhook/domain"
 	"context"
@@ -10,12 +11,18 @@ import (
 )
 
 const (
-	MaxAttempts    = 3
-	RetryBaseDelay = 2 * time.Second
+	MaxAttempts                 = 3
+	RetryBaseDelay              = 2 * time.Second
+	SaveFailedResponseTimeout   = 5 * time.Second
+	maxAttemptsExceededResponse = "max retry attempts exceeded"
 )
 
 type WebhookFetcher interface {
 	Fetch(wh *webhookDomain.Webhook) error
+}
+
+type ResponseSaver interface {
+	Save(ctx context.Context, r *responseDomain.Response) error
 }
 
 type Scheduler struct {
@@ -24,6 +31,7 @@ type Scheduler struct {
 
 	webhooks          map[int]domain.SchedulerItem
 	fetcher           WebhookFetcher
+	responseSaver     ResponseSaver
 	updateMinNotifier chan struct{}
 
 	logger *slog.Logger
@@ -53,6 +61,13 @@ func (s *Scheduler) SetFetcher(fetcher WebhookFetcher) {
 	defer s.mu.Unlock()
 
 	s.fetcher = fetcher
+}
+
+func (s *Scheduler) SetResponseSaver(responseSaver ResponseSaver) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.responseSaver = responseSaver
 }
 
 func (s *Scheduler) AddWebhook(wh *webhookDomain.Webhook) {
@@ -145,14 +160,29 @@ func (s *Scheduler) Retry(webhookID int) {
 		return
 	}
 
-	if item.Attempt == MaxAttempts {
+	if item.Attempt >= MaxAttempts {
+		nextRun := time.Now().Add(item.Webhook.Interval)
+		err := s.pq.UpdateNextFetch(webhookID, nextRun)
+		if err != nil {
+			s.mu.Unlock()
+			s.logger.Error("schedule regular fetch after failed retries failed", "id", webhookID, "err", err)
+			return
+		}
+
+		s.webhooks[webhookID] = domain.SchedulerItem{
+			Attempt:       0,
+			ScheduledTime: nextRun,
+			Webhook:       item.Webhook,
+		}
 		s.mu.Unlock()
-		// TODO: save error to postgres
+
+		s.notifyMinChanged()
+		s.saveMaxAttemptsExceeded(webhookID, item.Attempt)
 		return
 	}
 
 	delay := RetryBaseDelay * time.Duration(1<<(item.Attempt))
-	nextRun := item.ScheduledTime.Add(delay)
+	nextRun := time.Now().Add(delay)
 
 	err := s.pq.UpdateNextFetch(webhookID, nextRun)
 	if err != nil {
@@ -283,8 +313,13 @@ func (s *Scheduler) scheduleDueWebhook() (*webhookDomain.Webhook, bool) {
 		return nil, false
 	}
 
+	item, ok := s.webhooks[queueItem.ID]
+	if !ok {
+		return nil, false
+	}
+
 	s.webhooks[queueItem.ID] = domain.SchedulerItem{
-		Attempt:       0,
+		Attempt:       item.Attempt,
 		ScheduledTime: nextRun,
 		Webhook:       wh,
 	}
@@ -315,5 +350,65 @@ func (s *Scheduler) fetch(wh *webhookDomain.Webhook) {
 
 	if err := fetcher.Fetch(wh); err != nil {
 		s.logger.Error("fetch failed", "id", wh.ID, "err", err)
+		s.Retry(wh.ID)
+		return
 	}
+
+	s.markFetchSucceeded(wh.ID)
+}
+
+func (s *Scheduler) markFetchSucceeded(webhookID int) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	item, ok := s.webhooks[webhookID]
+	if !ok {
+		return
+	}
+
+	queueItem, err := s.pq.Get(webhookID)
+	if err != nil {
+		s.logger.Error("reset retry attempts failed", "id", webhookID, "err", err)
+		return
+	}
+
+	s.webhooks[webhookID] = domain.SchedulerItem{
+		Attempt:       0,
+		ScheduledTime: queueItem.NextFetch,
+		Webhook:       item.Webhook,
+	}
+}
+
+func (s *Scheduler) saveMaxAttemptsExceeded(webhookID int, attempt int) {
+	s.mu.Lock()
+	responseSaver := s.responseSaver
+	s.mu.Unlock()
+
+	if responseSaver == nil {
+		s.logger.Error("response saver is not configured", "id", webhookID)
+		return
+	}
+
+	now := time.Now()
+	response := &responseDomain.Response{
+		WebhookID:  webhookID,
+		Type:       responseDomain.ScheduledType,
+		Status:     responseDomain.FailedStatus,
+		StatusCode: 0,
+		Body:       []byte(maxAttemptsExceededResponse),
+		StartedAt:  now,
+		FinishedAt: &now,
+		Attempt:    attempt,
+		Duration:   0,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), SaveFailedResponseTimeout)
+	defer cancel()
+
+	if err := responseSaver.Save(ctx, response); err != nil {
+		s.logger.Error("save max attempts exceeded response failed", "id", webhookID, "err", err)
+		return
+	}
+
+	s.logger.Info("max attempts exceeded response saved", "id", webhookID, "attempt", attempt)
 }

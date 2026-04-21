@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	responseDomain "auto-http-fetcher/internal/response/domain"
 	"context"
 
 	webhookDomain "auto-http-fetcher/internal/webhook/domain"
@@ -27,6 +28,7 @@ func (f *Fetcher) Fetch(wh *webhookDomain.Webhook) error {
 		Method:      wh.Method,
 		Headers:     convertHeaders(wh.Headers),
 		Body:        wh.Body,
+		Type:        string(responseDomain.ScheduledType),
 	}
 
 	_, err := f.client.Fetch(context.Background(), req)
