@@ -3,7 +3,10 @@ package service
 import (
 	coreHttp "auto-http-fetcher/internal/core/http"
 	moduleDomain "auto-http-fetcher/internal/module/domain"
+
 	"context"
+	"net/http"
+	"slices"
 )
 
 func (s *ModuleService) Create(ctx context.Context, module moduleDomain.Module, userID int) (
@@ -16,12 +19,20 @@ func (s *ModuleService) Create(ctx context.Context, module moduleDomain.Module, 
 		return nil, coreHttp.NewValidationError("name", "name is required")
 	}
 
+	for _, webhook := range module.Webhooks {
+		methods := []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch,
+			http.MethodDelete, http.MethodConnect, http.MethodOptions, http.MethodTrace}
+		if !slices.Contains(methods, webhook.Method) {
+			return nil, coreHttp.ErrInvalidBody
+		}
+	}
+
 	newModule, err := s.moduleRepo.CreateModule(ctx, module, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: kafka
+	s.toKafka("create", userID, newModule.Webhooks)
 
 	return newModule, nil
 }

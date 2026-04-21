@@ -3,6 +3,7 @@ package service
 import (
 	coreHttp "auto-http-fetcher/internal/core/http"
 	moduleDomain "auto-http-fetcher/internal/module/domain"
+
 	"context"
 )
 

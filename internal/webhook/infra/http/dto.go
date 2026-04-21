@@ -2,12 +2,14 @@ package http
 
 import (
 	"auto-http-fetcher/internal/webhook/domain"
+
 	"net/url"
 	"time"
 )
 
 type WebhookDTO struct {
 	ID          int    `json:"id"`
+	ModuleID    int    `json:"module_id"`
 	Description string `json:"description"`
 
 	Interval string `json:"interval"`
@@ -35,12 +37,27 @@ func (w *WebhookDTO) ToDomain() (*domain.Webhook, error) {
 
 	return &domain.Webhook{
 		ID:          w.ID,
+		ModuleID:    w.ModuleID,
 		Description: w.Description,
-		Interval:    interval * time.Second,
-		Timeout:     timeout * time.Second,
+		Interval:    interval,
+		Timeout:     timeout,
 		URL:         *parsedURL,
 		Method:      w.Method,
 		Headers:     w.Headers,
 		Body:        w.Body,
 	}, nil
+}
+
+func WebhookToDTO(w *domain.Webhook) *WebhookDTO {
+	return &WebhookDTO{
+		ID:          w.ID,
+		ModuleID:    w.ModuleID,
+		Description: w.Description,
+		Interval:    w.Interval.String(),
+		Timeout:     w.Timeout.String(),
+		Method:      w.Method,
+		Headers:     w.Headers,
+		Body:        w.Body,
+		URL:         w.URL.String(),
+	}
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	coreHttp "auto-http-fetcher/internal/core/http"
+
 	"context"
 )
 
@@ -13,7 +14,7 @@ func (s *ModuleService) Delete(ctx context.Context, moduleID, userID int) error 
 		return coreHttp.NewValidationError("user id", "userID is required")
 	}
 
-	if err := s.moduleRepo.DeleteModule(ctx, userID, moduleID); err != nil {
+	if err := s.moduleRepo.DeleteModule(ctx, moduleID, userID); err != nil {
 		return err
 	}
 

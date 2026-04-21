@@ -2,6 +2,7 @@ package service
 
 import (
 	"auto-http-fetcher/internal/module/domain"
+
 	"context"
 )
 
