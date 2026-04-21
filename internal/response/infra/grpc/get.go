@@ -15,8 +15,8 @@ func (h *Handler) Fetch(ctx context.Context, req *fetcherpb.FetchRequest) (*fetc
 	wh := webhookDomain.Webhook{
 		ID:          int(req.Id),
 		Description: req.Description,
-		Interval:    time.Duration(req.IntervalMs),
-		Timeout:     time.Duration(req.TimeoutMs),
+		Interval:    time.Duration(req.IntervalMs) * time.Millisecond,
+		Timeout:     time.Duration(req.TimeoutMs) * time.Millisecond,
 		Method:      req.Method,
 		Body:        req.Body,
 	}
