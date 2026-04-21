@@ -47,7 +47,7 @@ func (c *Closer) Close(ctx context.Context) error {
 	var result error
 	for _, item := range c.items {
 		if err := item.fn(ctx); err != nil {
-			c.log.Error("gracefull shutdowm failed", "error", err)
+			c.log.Error("graceful shutdowm failed", "error", err)
 			result = multierr.Append(result, err)
 		}
 	}
