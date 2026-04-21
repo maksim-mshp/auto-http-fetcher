@@ -17,7 +17,9 @@ func (r *PGModuleRepo) UpdateModule(ctx context.Context, module domainModule.Mod
 	if err != nil {
 		return nil, coreHttp.ErrInternal
 	}
-	defer tx.Rollback(ctx)
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 
 	query := `UPDATE modules 
               SET name = $1, description = $2, updated_at = NOW() 

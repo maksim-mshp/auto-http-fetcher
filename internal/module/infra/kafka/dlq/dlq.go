@@ -41,14 +41,14 @@ func NewDeadLetterQueue(logger *slog.Logger, kafka *kafka.Producer) *DeadLetterQ
 	return dlq
 }
 
-func (dlq *DeadLetterQueue) Push(userID int, msg kafka2.WebhookKafkaDTO, error error) {
+func (dlq *DeadLetterQueue) Push(userID int, msg kafka2.WebhookKafkaDTO, err error) {
 	dlq.mu.Lock()
 	defer dlq.mu.Unlock()
 
 	dlq.queue = append(dlq.queue, &Message{
 		UserID:     userID,
 		MessageDTO: msg,
-		Error:      error,
+		Error:      err,
 	})
 	dlq.logger.Warn("Pushing message to dead-letter queue", "webhook_id", msg.ID, "user_id", userID)
 	log.Println(dlq.queue)

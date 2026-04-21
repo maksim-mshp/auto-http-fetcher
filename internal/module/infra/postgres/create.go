@@ -19,7 +19,9 @@ func (r *PGModuleRepo) CreateModule(ctx context.Context, module domainModule.Mod
 	if err != nil {
 		return nil, coreHttp.ErrInternal
 	}
-	defer tx.Rollback(ctx)
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 
 	query := `INSERT INTO modules (owner_id, name, description) 
               VALUES ($1, $2, $3) 
