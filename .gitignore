@@ -38,6 +38,7 @@ coverage/
 *.so
 *.stackdump
 *.test
+*.log
 $RECYCLE.BIN/
 bin/
 dist/
