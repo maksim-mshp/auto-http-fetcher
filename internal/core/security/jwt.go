@@ -28,7 +28,7 @@ func (s *JWT) GenerateAccessToken(userID int) (string, error) {
 	claims := Claims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.accessTTL)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.accessTTL * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}

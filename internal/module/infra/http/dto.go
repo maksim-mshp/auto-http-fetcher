@@ -6,6 +6,14 @@ import (
 	webhookDTO "auto-http-fetcher/internal/webhook/infra/http"
 )
 
+type ModuleRequestResponse struct {
+	Module ModuleDTO `json:"module"`
+}
+
+type ModuleList struct {
+	Modules []*ModuleDTO `json:"modules"`
+}
+
 type ModuleDTO struct {
 	ID          int                      `json:"id"`
 	OwnerId     int                      `json:"owner_id"`
@@ -32,6 +40,16 @@ func (m *ModuleDTO) ToDomain() (*domainModule.Module, error) {
 	return &module, nil
 }
 
-type ModuleListDTO struct {
-	Modules []*ModuleDTO `json:"modules"`
+func ModuleToDTO(m *domainModule.Module) *ModuleDTO {
+	var module = ModuleDTO{
+		ID:          m.ID,
+		OwnerId:     m.OwnerId,
+		Name:        m.Name,
+		Description: m.Description,
+		Webhooks:    make([]*webhookDTO.WebhookDTO, len(m.Webhooks)),
+	}
+	for i, webhook := range m.Webhooks {
+		module.Webhooks[i] = webhookDTO.WebhookToDTO(webhook)
+	}
+	return &module
 }

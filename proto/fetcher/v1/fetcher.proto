@@ -21,6 +21,7 @@ message FetchRequest {
   map<string, HeaderValues> headers = 7;
 
   bytes body = 8;
+  string type = 9;
 }
 
 message HeaderValues {
