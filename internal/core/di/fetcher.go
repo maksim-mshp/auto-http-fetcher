@@ -27,12 +27,6 @@ type FetcherApp struct {
 	pool       *pgxpool.Pool
 }
 
-type FetcherConfig struct {
-	grpcPort    string
-	postgresURL string
-	env         string
-}
-
 func NewFetcherApp(ctx context.Context) (*FetcherApp, error) {
 	if err := config.LoadDotEnv(".env"); err != nil {
 		panic(err)
@@ -69,7 +63,7 @@ func (f *FetcherApp) Run() error {
 		return err
 	}
 
-	f.closer.Add("listener", func(ctx context.Context) error {
+	err = f.closer.Add("listener", func(ctx context.Context) error {
 		if err := lis.Close(); err != nil {
 			f.logger.Error("failed to close listener", "error", err)
 			return err
@@ -78,17 +72,29 @@ func (f *FetcherApp) Run() error {
 		return nil
 	})
 
-	f.closer.Add("grpc_server", func(ctx context.Context) error {
+	if err != nil {
+		return err
+	}
+
+	err = f.closer.Add("grpc_server", func(ctx context.Context) error {
 		f.grpcServer.GracefulStop()
 		f.logger.Info("gRPC server stopped")
 		return nil
 	})
 
-	f.closer.Add("database", func(ctx context.Context) error {
+	if err != nil {
+		return err
+	}
+
+	err = f.closer.Add("database", func(ctx context.Context) error {
 		f.pool.Close()
 		f.logger.Info("Database connection closed")
 		return nil
 	})
+
+	if err != nil {
+		return err
+	}
 
 	errCh := make(chan error, 1)
 
