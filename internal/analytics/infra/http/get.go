@@ -1,0 +1,20 @@
+package http
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+func (h *Handler) HandleGet(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	analytics, err := h.analytics.Get(ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(analytics); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}

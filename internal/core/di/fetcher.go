@@ -29,13 +29,17 @@ type FetcherApp struct {
 
 func NewFetcherApp(ctx context.Context) (*FetcherApp, error) {
 	if err := config.LoadDotEnv(".env"); err != nil {
-		panic(err)
+		return nil, err
 	}
 	postgresURL := config.MustGet("POSTGRES_URL")
 	env := config.Get("ENV", "Development")
 
 	pool, err := pgxpool.New(ctx, postgresURL)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := pool.Ping(ctx); err != nil {
 		return nil, err
 	}
 
