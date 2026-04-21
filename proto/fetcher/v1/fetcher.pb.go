@@ -22,8 +22,16 @@ const (
 )
 
 type FetchRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	WebhookData   []byte                 `protobuf:"bytes,1,opt,name=webhook_data,json=webhookData,proto3" json:"webhook_data,omitempty"`
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Id            int64                    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Description   string                   `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	IntervalMs    int64                    `protobuf:"varint,3,opt,name=interval_ms,json=intervalMs,proto3" json:"interval_ms,omitempty"`
+	TimeoutMs     int64                    `protobuf:"varint,4,opt,name=timeout_ms,json=timeoutMs,proto3" json:"timeout_ms,omitempty"`
+	Url           string                   `protobuf:"bytes,5,opt,name=url,proto3" json:"url,omitempty"`
+	Method        string                   `protobuf:"bytes,6,opt,name=method,proto3" json:"method,omitempty"`
+	Headers       map[string]*HeaderValues `protobuf:"bytes,7,rep,name=headers,proto3" json:"headers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Body          []byte                   `protobuf:"bytes,8,opt,name=body,proto3" json:"body,omitempty"`
+	Type          string                   `protobuf:"bytes,9,opt,name=type,proto3" json:"type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,9 +66,109 @@ func (*FetchRequest) Descriptor() ([]byte, []int) {
 	return file_proto_fetcher_v1_fetcher_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *FetchRequest) GetWebhookData() []byte {
+func (x *FetchRequest) GetId() int64 {
 	if x != nil {
-		return x.WebhookData
+		return x.Id
+	}
+	return 0
+}
+
+func (x *FetchRequest) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *FetchRequest) GetIntervalMs() int64 {
+	if x != nil {
+		return x.IntervalMs
+	}
+	return 0
+}
+
+func (x *FetchRequest) GetTimeoutMs() int64 {
+	if x != nil {
+		return x.TimeoutMs
+	}
+	return 0
+}
+
+func (x *FetchRequest) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *FetchRequest) GetMethod() string {
+	if x != nil {
+		return x.Method
+	}
+	return ""
+}
+
+func (x *FetchRequest) GetHeaders() map[string]*HeaderValues {
+	if x != nil {
+		return x.Headers
+	}
+	return nil
+}
+
+func (x *FetchRequest) GetBody() []byte {
+	if x != nil {
+		return x.Body
+	}
+	return nil
+}
+
+func (x *FetchRequest) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+type HeaderValues struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Values        []string               `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HeaderValues) Reset() {
+	*x = HeaderValues{}
+	mi := &file_proto_fetcher_v1_fetcher_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HeaderValues) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeaderValues) ProtoMessage() {}
+
+func (x *HeaderValues) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_fetcher_v1_fetcher_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeaderValues.ProtoReflect.Descriptor instead.
+func (*HeaderValues) Descriptor() ([]byte, []int) {
+	return file_proto_fetcher_v1_fetcher_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *HeaderValues) GetValues() []string {
+	if x != nil {
+		return x.Values
 	}
 	return nil
 }
@@ -74,7 +182,7 @@ type FetchResponse struct {
 
 func (x *FetchResponse) Reset() {
 	*x = FetchResponse{}
-	mi := &file_proto_fetcher_v1_fetcher_proto_msgTypes[1]
+	mi := &file_proto_fetcher_v1_fetcher_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -86,7 +194,7 @@ func (x *FetchResponse) String() string {
 func (*FetchResponse) ProtoMessage() {}
 
 func (x *FetchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_fetcher_v1_fetcher_proto_msgTypes[1]
+	mi := &file_proto_fetcher_v1_fetcher_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -99,7 +207,7 @@ func (x *FetchResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchResponse.ProtoReflect.Descriptor instead.
 func (*FetchResponse) Descriptor() ([]byte, []int) {
-	return file_proto_fetcher_v1_fetcher_proto_rawDescGZIP(), []int{1}
+	return file_proto_fetcher_v1_fetcher_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *FetchResponse) GetAttempt() int64 {
@@ -114,9 +222,24 @@ var File_proto_fetcher_v1_fetcher_proto protoreflect.FileDescriptor
 const file_proto_fetcher_v1_fetcher_proto_rawDesc = "" +
 	"\n" +
 	"\x1eproto/fetcher/v1/fetcher.proto\x12\n" +
-	"fetcher.v1\"1\n" +
-	"\fFetchRequest\x12!\n" +
-	"\fwebhook_data\x18\x01 \x01(\fR\vwebhookData\")\n" +
+	"fetcher.v1\"\xe9\x02\n" +
+	"\fFetchRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1f\n" +
+	"\vinterval_ms\x18\x03 \x01(\x03R\n" +
+	"intervalMs\x12\x1d\n" +
+	"\n" +
+	"timeout_ms\x18\x04 \x01(\x03R\ttimeoutMs\x12\x10\n" +
+	"\x03url\x18\x05 \x01(\tR\x03url\x12\x16\n" +
+	"\x06method\x18\x06 \x01(\tR\x06method\x12?\n" +
+	"\aheaders\x18\a \x03(\v2%.fetcher.v1.FetchRequest.HeadersEntryR\aheaders\x12\x12\n" +
+	"\x04body\x18\b \x01(\fR\x04body\x12\x12\n" +
+	"\x04type\x18\t \x01(\tR\x04type\x1aT\n" +
+	"\fHeadersEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fetcher.v1.HeaderValuesR\x05value:\x028\x01\"&\n" +
+	"\fHeaderValues\x12\x16\n" +
+	"\x06values\x18\x01 \x03(\tR\x06values\")\n" +
 	"\rFetchResponse\x12\x18\n" +
 	"\aattempt\x18\x01 \x01(\x03R\aattempt2N\n" +
 	"\x0eFetcherService\x12<\n" +
@@ -134,19 +257,23 @@ func file_proto_fetcher_v1_fetcher_proto_rawDescGZIP() []byte {
 	return file_proto_fetcher_v1_fetcher_proto_rawDescData
 }
 
-var file_proto_fetcher_v1_fetcher_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_fetcher_v1_fetcher_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_fetcher_v1_fetcher_proto_goTypes = []any{
 	(*FetchRequest)(nil),  // 0: fetcher.v1.FetchRequest
-	(*FetchResponse)(nil), // 1: fetcher.v1.FetchResponse
+	(*HeaderValues)(nil),  // 1: fetcher.v1.HeaderValues
+	(*FetchResponse)(nil), // 2: fetcher.v1.FetchResponse
+	nil,                   // 3: fetcher.v1.FetchRequest.HeadersEntry
 }
 var file_proto_fetcher_v1_fetcher_proto_depIdxs = []int32{
-	0, // 0: fetcher.v1.FetcherService.Fetch:input_type -> fetcher.v1.FetchRequest
-	1, // 1: fetcher.v1.FetcherService.Fetch:output_type -> fetcher.v1.FetchResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: fetcher.v1.FetchRequest.headers:type_name -> fetcher.v1.FetchRequest.HeadersEntry
+	1, // 1: fetcher.v1.FetchRequest.HeadersEntry.value:type_name -> fetcher.v1.HeaderValues
+	0, // 2: fetcher.v1.FetcherService.Fetch:input_type -> fetcher.v1.FetchRequest
+	2, // 3: fetcher.v1.FetcherService.Fetch:output_type -> fetcher.v1.FetchResponse
+	3, // [3:4] is the sub-list for method output_type
+	2, // [2:3] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_fetcher_v1_fetcher_proto_init() }
@@ -160,7 +287,7 @@ func file_proto_fetcher_v1_fetcher_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_fetcher_v1_fetcher_proto_rawDesc), len(file_proto_fetcher_v1_fetcher_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
