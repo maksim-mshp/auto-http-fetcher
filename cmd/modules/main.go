@@ -2,6 +2,7 @@ package main
 
 import (
 	"auto-http-fetcher/internal/core/di"
+
 	"context"
 	"fmt"
 	"log"
@@ -12,7 +13,8 @@ func main() {
 
 	app, err := di.NewModulesApp(ctx)
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("error initializing module service: %v", err))
+		log.Println(fmt.Sprintf("error initializing module service: %v", err))
+		return
 	}
 	if err = app.Start(ctx); err != nil {
 		log.Printf("error starting app: %v", err)

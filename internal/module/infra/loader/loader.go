@@ -5,13 +5,15 @@ import (
 	"auto-http-fetcher/internal/module/infra/kafka"
 	"auto-http-fetcher/internal/module/infra/kafka/dlq"
 	"auto-http-fetcher/internal/webhook/domain"
+
 	"context"
 	"encoding/json"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // WebhookLoader - воркер который при старте module сервиса берет все вебхуки, что есть и в кафку кидает (для scheduler)
