@@ -70,6 +70,19 @@ func (s *Scheduler) SetResponseSaver(responseSaver ResponseSaver) {
 	s.responseSaver = responseSaver
 }
 
+func (s *Scheduler) UpsertWebhook(wh *webhookDomain.Webhook) {
+	s.mu.Lock()
+	_, exists := s.webhooks[wh.ID]
+	s.mu.Unlock()
+
+	if exists {
+		s.UpdateWebhook(wh.ID, wh)
+		return
+	}
+
+	s.AddWebhook(wh)
+}
+
 func (s *Scheduler) AddWebhook(wh *webhookDomain.Webhook) {
 	s.mu.Lock()
 	if _, ok := s.webhooks[wh.ID]; ok {

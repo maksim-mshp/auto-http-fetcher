@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -12,6 +10,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./internal/core/postgres/migrations:/docker-entrypoint-initdb.d:ro
     networks:
       - fetcher-network
     healthcheck:
@@ -35,17 +34,41 @@ services:
       timeout: 5s
       retries: 5
 
+  kafka:
+    image: bitnami/kafka:3.7
+    container_name: auto-http-fetcher-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - fetcher-network
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
   analytics:
     image: analytics:latest
     container_name: auto-http-fetcher-analytics
     build:
       context: .
-      dockerfile: Dockerfile.analytics
+      dockerfile: cmd/analytics/Dockerfile
     ports:
       - "8080:8080"
     environment:
       POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis:6379
       ANALYTICS_PORT: :8080
       ANALYTICS_TTL: 60
       ENV: Development
@@ -63,7 +86,7 @@ services:
     container_name: auto-http-fetcher-fetcher
     build:
       context: .
-      dockerfile: Dockerfile.fetcher
+      dockerfile: cmd/fetcher/Dockerfile
     ports:
       - "50051:50051"
     environment:
@@ -73,6 +96,57 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - fetcher-network
+    restart: unless-stopped
+
+  scheduler:
+    image: scheduler:latest
+    container_name: auto-http-fetcher-scheduler
+    build:
+      context: .
+      dockerfile: cmd/scheduler/Dockerfile
+    environment:
+      POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
+      KAFKA_BROKER: kafka:9092
+      KAFKA_TOPIC_SCHEDULE_REQUEST: schedule-requests
+      KAFKA_CONSUMER_GROUP: auto-http-fetcher-scheduler
+      FETCHER_GRPC_ADDR: fetcher:50051
+      ENV: Development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      fetcher:
+        condition: service_started
+    networks:
+      - fetcher-network
+    restart: unless-stopped
+
+  modules:
+    image: modules:latest
+    container_name: auto-http-fetcher-modules
+    build:
+      context: .
+      dockerfile: cmd/modules/Dockerfile
+    ports:
+      - "8090:8090"
+    environment:
+      POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
+      MODULES_PORT: :8090
+      KAFKA_BROKER: kafka:9092
+      KAFKA_TOPIC_SCHEDULE_REQUEST: schedule-requests
+      JWT_SECRET: development-secret
+      JWT_TTL: 5h
+      ENV: Development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      scheduler:
+        condition: service_started
     networks:
       - fetcher-network
     restart: unless-stopped

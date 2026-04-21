@@ -1,22 +1,15 @@
 package kafka
 
-type webhookPayload struct {
-	ID int `json:"id"`
+type WebhookPayload struct {
+	Action      string `json:"action"`
+	ID          int    `json:"id"`
+	Description string `json:"description"`
 
-	Interval string `json:"interval"`
-	Timeout  string `json:"timeout"`
+	Interval int `json:"interval"`
+	Timeout  int `json:"timeout"`
 
 	URL     string              `json:"url"`
 	Method  string              `json:"method"`
 	Headers map[string][]string `json:"headers"`
 	Body    []byte              `json:"body"`
-}
-
-type WebhookCreatedPayload webhookPayload
-type WebhookUpdatedPayload webhookPayload
-type WebhookFetchPayload webhookPayload
-
-type WebhookRetryPayload struct {
-	ID      int `json:"id"`
-	Attempt int `json:"attempt"`
 }
