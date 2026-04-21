@@ -3,44 +3,37 @@ package di
 import (
 	"auto-http-fetcher/internal/core/closer"
 	"auto-http-fetcher/internal/core/config"
-	kafkaProducer "auto-http-fetcher/internal/core/kafka"
 	"auto-http-fetcher/internal/core/logger"
 	"auto-http-fetcher/internal/core/postgres"
 	"auto-http-fetcher/internal/core/security"
-	moduleHandlers "auto-http-fetcher/internal/module/infra/http/handlers"
-	"auto-http-fetcher/internal/module/infra/http/router"
-	deadLetterQueue "auto-http-fetcher/internal/module/infra/kafka/dlq"
-	webhookLoader "auto-http-fetcher/internal/module/infra/loader"
-	modulePG "auto-http-fetcher/internal/module/infra/postgres"
-	moduleService "auto-http-fetcher/internal/module/service"
+	userHandles "auto-http-fetcher/internal/user/infra/http"
+	userPG "auto-http-fetcher/internal/user/infra/postgres"
+	userService "auto-http-fetcher/internal/user/service"
+	"context"
 	"errors"
+	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"context"
-	"log/slog"
-	"net/http"
 	"time"
 )
 
-type ModulesApp struct {
+type UsersApp struct {
 	httpServer *http.Server
-	loader     *webhookLoader.WebhookLoader
 	logger     *slog.Logger
 	closer     *closer.Closer
 }
 
-func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
+func NewUsersApp(ctx context.Context) (*UsersApp, error) {
 	if err := config.LoadDotEnv(".env"); err != nil {
 		return nil, err
 	}
 
 	env := config.Get("ENV", "Development")
-	httpAddr := config.Get("MODULES_ADDR", ":8090")
+	httpAddr := config.Get("USERS_ADDR", ":8095")
 	postgresURL := config.MustGet("POSTGRES_URL")
-	kafkaBroker := config.MustGet("KAFKA_BROKER")
-	kafkaTopic := config.MustGet("KAFKA_TOPIC_SCHEDULE_REQUEST")
+
 	jwtSecret := config.MustGet("JWT_SECRET")
 	jwtTTL, err := time.ParseDuration(config.Get("JWT_TTL", "5h"))
 	if err != nil {
@@ -48,7 +41,7 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 	}
 
 	logs := logger.New(env)
-	logs = logs.With("service", "modules")
+	logs = logs.With("service", "users")
 	clsr := closer.New(logs)
 
 	pool, err := postgres.Open(ctx, postgresURL)
@@ -56,27 +49,16 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 		return nil, err
 	}
 
-	moduleRepo := modulePG.NewPGModuleRepo(pool)
+	userRepo := userPG.NewUserRepo(pool)
 
-	kafka, err := kafkaProducer.NewProducer([]string{kafkaBroker}, kafkaTopic)
-	if err != nil {
-		return nil, err
-	}
-
-	dlq := deadLetterQueue.NewDeadLetterQueue(logs, kafka)
-
-	loader := webhookLoader.NewWebhookLoader(logs, pool, kafka, dlq)
-
-	moduleServ := moduleService.NewModuleService(logs, kafka, dlq, moduleRepo)
 	jwt := security.NewJWTService(jwtSecret, jwtTTL*time.Hour)
+	userServ := userService.NewUserService(logs, jwt, userRepo)
 
-	moduleHandles := moduleHandlers.NewModuleHandlers(logs, *moduleServ)
-
-	moduleRouter := router.GetModulesRouter(logs, jwt, moduleHandles)
+	userHandlers := userHandles.NewUserHandlers(logs, userServ)
 
 	server := &http.Server{
 		Addr:    httpAddr,
-		Handler: moduleRouter,
+		Handler: userHandles.GetUserRouter(logs, userHandlers),
 	}
 
 	err = clsr.Add("postgres", func(_ context.Context) error {
@@ -86,27 +68,17 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = clsr.Add("kafka producer", func(_ context.Context) error {
-		return kafka.Close()
-	})
-	if err != nil {
-		return nil, err
-	}
-	err = clsr.Add("module server", func(ctx context.Context) error {
+	err = clsr.Add("users server", func(ctx context.Context) error {
 		return server.Shutdown(ctx)
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &ModulesApp{logger: logs, closer: clsr, httpServer: server, loader: loader}, nil
+	return &UsersApp{logger: logs, closer: clsr, httpServer: server}, nil
 }
 
-func (app *ModulesApp) Start(ctx context.Context) error {
-	if err := app.loader.Load(ctx); err != nil {
-		return err
-	}
-
+func (app *UsersApp) Start(ctx context.Context) error {
 	errCh := make(chan error, 1)
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
@@ -135,6 +107,6 @@ func (app *ModulesApp) Start(ctx context.Context) error {
 	return nil
 }
 
-func (app *ModulesApp) Shutdown(ctx context.Context) error {
+func (app *UsersApp) Shutdown(ctx context.Context) error {
 	return app.closer.Close(ctx)
 }
