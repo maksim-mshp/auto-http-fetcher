@@ -11,6 +11,8 @@ import (
 )
 
 func (wh *WebhookHandlers) Create(w http.ResponseWriter, r *http.Request) {
+	wh.logger.Debug("webhook create endpoint called")
+
 	user, err := middleware.GetUserIDFromContext(r.Context())
 	if err != nil {
 		coreHttp.SendErrorJSON(wh.logger, w, &coreHttp.ErrUnauthorized)

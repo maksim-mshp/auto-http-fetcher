@@ -3,19 +3,18 @@ package handlers
 import (
 	coreHttp "auto-http-fetcher/internal/core/http"
 	"auto-http-fetcher/internal/core/middleware"
-	webhookHttp "auto-http-fetcher/internal/webhook/infra/http"
 	"errors"
 	"net/http"
 	"strconv"
 )
 
 func (wh *WebhookHandlers) Delete(w http.ResponseWriter, r *http.Request) {
+	wh.logger.Debug("webhook delete endpoint called")
 	user, err := middleware.GetUserIDFromContext(r.Context())
 	if err != nil {
 		coreHttp.SendErrorJSON(wh.logger, w, &coreHttp.ErrUnauthorized)
 		return
 	}
-
 	module := r.PathValue("module_id")
 	moduleInt, err := strconv.Atoi(module)
 	if err != nil {
@@ -26,12 +25,6 @@ func (wh *WebhookHandlers) Delete(w http.ResponseWriter, r *http.Request) {
 	webhookIdInt, err := strconv.Atoi(webhookId)
 	if err != nil {
 		coreHttp.SendErrorJSON(wh.logger, w, &coreHttp.ErrInvalidWebhookID)
-		return
-	}
-
-	var req webhookHttp.WebhookDTORequestResponse
-	if err := coreHttp.ParseJSONBody(wh.logger, r, &req); err != nil {
-		coreHttp.SendErrorJSON(wh.logger, w, &coreHttp.ErrInvalidBody)
 		return
 	}
 

@@ -10,6 +10,8 @@ import (
 )
 
 func (m *ModuleHandlers) Create(w http.ResponseWriter, r *http.Request) {
+	m.logger.Debug("module create endpoint called")
+
 	user, err := middleware.GetUserIDFromContext(r.Context())
 	if err != nil {
 		coreHttp.SendErrorJSON(m.logger, w, &coreHttp.ErrUnauthorized)
