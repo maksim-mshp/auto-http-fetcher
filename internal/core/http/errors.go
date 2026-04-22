@@ -45,6 +45,14 @@ var (
 		StatusCode: http.StatusBadRequest,
 		ErrorCode:  "INVALID_USER_ID",
 	}
+	ErrInvalidModuleID = APIError{
+		StatusCode: http.StatusBadRequest,
+		ErrorCode:  "INVALID_MODULE_ID",
+	}
+	ErrInvalidWebhookID = APIError{
+		StatusCode: http.StatusBadRequest,
+		ErrorCode:  "INVALID_WEBHOOK_ID",
+	}
 
 	ErrVerificationFailed = APIError{
 		StatusCode: http.StatusForbidden,
@@ -60,10 +68,24 @@ var (
 		StatusCode: http.StatusNotFound,
 		ErrorCode:  "MODULE_NOT_FOUND",
 	}
+
+	ErrWebhookNotFound = APIError{
+		StatusCode: http.StatusNotFound,
+		ErrorCode:  "WEBHOOK_NOT_FOUND",
+	}
+	ErrWebhookInUse = APIError{
+		StatusCode: http.StatusConflict,
+		ErrorCode:  "WEBHOOK_IN_USE",
+	}
+
+	ErrModuleHasWebhooks = APIError{
+		StatusCode: http.StatusNotFound,
+		ErrorCode:  "MODULE_HAS_WEBHOOKS",
+	}
 )
 
-func NewValidationError(field string, message string) *APIError {
-	return &APIError{
+func NewValidationError(field string, message string) APIError {
+	return APIError{
 		StatusCode: http.StatusBadRequest,
 		ErrorCode:  "VALIDATION_ERROR",
 		Details: map[string]any{

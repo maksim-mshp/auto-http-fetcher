@@ -2,6 +2,8 @@ package postgres
 
 import (
 	coreHttp "auto-http-fetcher/internal/core/http"
+	"errors"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"context"
 )
@@ -11,11 +13,15 @@ func (r *PGModuleRepo) DeleteModule(ctx context.Context, moduleID, userID int) e
 
 	cmdTag, err := r.pool.Exec(ctx, query, moduleID, userID)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
+			return coreHttp.ErrModuleHasWebhooks
+		}
 		return coreHttp.ErrInternal
 	}
 
 	if cmdTag.RowsAffected() == 0 {
-		return nil
+		return coreHttp.ErrModuleNotFound
 	}
 
 	return nil

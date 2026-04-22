@@ -12,6 +12,9 @@ import (
 	deadLetterQueue "auto-http-fetcher/internal/module/infra/kafka/dlq"
 	modulePG "auto-http-fetcher/internal/module/infra/postgres"
 	moduleService "auto-http-fetcher/internal/module/service"
+	webhookHandlers "auto-http-fetcher/internal/webhook/infra/http/handlers"
+	webhookPG "auto-http-fetcher/internal/webhook/infra/postgres"
+	webhookService "auto-http-fetcher/internal/webhook/service"
 	"errors"
 	"os"
 	"os/signal"
@@ -55,6 +58,7 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 	}
 
 	moduleRepo := modulePG.NewPGModuleRepo(pool)
+	webhookRepo := webhookPG.NewPGWebhookRepo(pool)
 
 	kafka, err := kafkaProducer.NewProducer([]string{kafkaBroker}, kafkaTopic)
 	if err != nil {
@@ -64,11 +68,13 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 	dlq := deadLetterQueue.NewDeadLetterQueue(logs, kafka)
 
 	moduleServ := moduleService.NewModuleService(logs, kafka, dlq, moduleRepo)
+	webhookServ := webhookService.NewWebhookService(logs, kafka, dlq, webhookRepo)
 	jwt := security.NewJWTService(jwtSecret, jwtTTL*time.Hour)
 
 	moduleHandles := moduleHandlers.NewModuleHandlers(logs, *moduleServ)
+	webhookHandles := webhookHandlers.NewWebhookHandlers(logs, *webhookServ)
 
-	moduleRouter := router.GetModulesRouter(logs, jwt, moduleHandles)
+	moduleRouter := router.GetModulesRouter(logs, jwt, moduleHandles, webhookHandles)
 
 	server := &http.Server{
 		Addr:    httpAddr,
