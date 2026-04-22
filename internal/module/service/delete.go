@@ -2,8 +2,8 @@ package service
 
 import (
 	coreHttp "auto-http-fetcher/internal/core/http"
-
 	"context"
+	"errors"
 )
 
 func (s *ModuleService) Delete(ctx context.Context, moduleID, userID int) error {
@@ -14,11 +14,13 @@ func (s *ModuleService) Delete(ctx context.Context, moduleID, userID int) error 
 		return coreHttp.NewValidationError("user id", "userID is required")
 	}
 
-	if err := s.moduleRepo.DeleteModule(ctx, moduleID, userID); err != nil {
+	err := s.moduleRepo.DeleteModule(ctx, moduleID, userID)
+	if err != nil {
+		if errors.As(err, &coreHttp.ErrModuleNotFound) {
+			return nil
+		}
 		return err
 	}
-
-	// TODO: kafka
 
 	return nil
 }

@@ -35,17 +35,6 @@ func (r *PGModuleRepo) UpdateModule(ctx context.Context, module domainModule.Mod
 		return nil, coreHttp.ErrInternal
 	}
 
-	deleteQuery := `DELETE FROM webhooks WHERE module_id = $1`
-	if _, err = tx.Exec(ctx, deleteQuery, module.ID); err != nil {
-		return nil, coreHttp.ErrInternal
-	}
-
-	for _, webhook := range module.Webhooks {
-		if err = r.createWebhook(ctx, tx, webhook); err != nil {
-			return nil, err
-		}
-	}
-
 	if err = tx.Commit(ctx); err != nil {
 		return nil, coreHttp.ErrInternal
 	}

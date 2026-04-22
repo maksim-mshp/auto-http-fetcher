@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS modules (
 
 CREATE TABLE IF NOT EXISTS webhooks (
     id          SERIAL PRIMARY KEY,
-    module_id   INT NOT NULL REFERENCES modules(id) ON DELETE CASCADE,
+    module_id   INT NOT NULL REFERENCES modules(id) ON DELETE RESTRICT,
     description TEXT DEFAULT '',
     interval_s BIGINT NOT NULL,
     timeout_s  BIGINT NOT NULL,

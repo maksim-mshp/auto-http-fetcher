@@ -41,5 +41,5 @@ func (m *ModuleHandlers) Create(w http.ResponseWriter, r *http.Request) {
 
 	coreHttp.SendJSON(m.logger, w, &moduleHttp.ModuleRequestResponse{
 		Module: *moduleHttp.ModuleToDTO(newModule),
-	}, http.StatusOK)
+	}, http.StatusCreated)
 }
