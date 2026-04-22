@@ -12,15 +12,15 @@ import (
 func GetModulesRouter(logger *slog.Logger, jwt *security.JWT, moduleHandles *modulesHandlers.ModuleHandlers,
 	webhookHandles *webhookHandlers.WebhookHandlers) http.Handler {
 	module := http.NewServeMux()
-	module.HandleFunc("POST /module/", moduleHandles.Create)
-	module.HandleFunc("PUT /module/", moduleHandles.Update)
-	module.HandleFunc("DELETE /module/{id}", moduleHandles.Delete)
-	module.HandleFunc("GET /module/{id}", moduleHandles.GetOne)
-	module.HandleFunc("GET /modules/", moduleHandles.GetList)
+	module.HandleFunc("POST /api/v1/module/", moduleHandles.Create)
+	module.HandleFunc("PUT /api/v1/module/", moduleHandles.Update)
+	module.HandleFunc("DELETE /api/v1/module/{id}", moduleHandles.Delete)
+	module.HandleFunc("GET /api/v1/module/{id}", moduleHandles.GetOne)
+	module.HandleFunc("GET /api/v1/modules/", moduleHandles.GetList)
 
-	module.HandleFunc("POST /module/{module_id}/webhook/", webhookHandles.Create)
-	module.HandleFunc("PUT /module/{module_id}/webhook/", webhookHandles.Update)
-	module.HandleFunc("DELETE /module/{module_id}/webhook/{webhook_id}", webhookHandles.Delete)
+	module.HandleFunc("POST /api/v1/module/{module_id}/webhook/", webhookHandles.Create)
+	module.HandleFunc("PUT /api/v1/module/{module_id}/webhook/", webhookHandles.Update)
+	module.HandleFunc("DELETE /api/v1/module/{module_id}/webhook/{webhook_id}", webhookHandles.Delete)
 
 	return middleware.Logger(logger)(
 		middleware.AuthMiddleware(jwt)(module))
