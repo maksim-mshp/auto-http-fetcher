@@ -10,8 +10,8 @@ import (
 type ModuleService struct {
 	logger     *slog.Logger
 	moduleRepo ModuleRepository
-	kafka      *coreKafka.Producer
-	dlq        *dlq.DeadLetterQueue
+	kafka      coreKafka.ProducerInterface
+	dlq        dlq.DLQ
 }
 
 func NewModuleService(logger *slog.Logger, kafka *coreKafka.Producer, dlq *dlq.DeadLetterQueue,

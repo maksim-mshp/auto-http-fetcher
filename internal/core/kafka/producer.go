@@ -11,6 +11,10 @@ import (
 	"github.com/IBM/sarama"
 )
 
+type ProducerInterface interface {
+	SendMessage(ctx context.Context, userID int, message any) error
+}
+
 type Producer struct {
 	producer sarama.SyncProducer
 	topic    string
