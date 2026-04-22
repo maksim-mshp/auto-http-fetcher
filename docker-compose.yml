@@ -5,11 +5,10 @@ services:
     ports:
       - "80:80"
     volumes:
-      - nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       gateway:
         condition: service_started
-
     networks:
       - fetcher-network
     restart: unless-stopped
