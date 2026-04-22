@@ -17,8 +17,18 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+// @Title						Auto HTTP Fetcher API
+// @Description					Единая точка входа в сервис: авторизация, модули, вебхуки, аналитика и ручной запуск HTTP-запросов.
+// @Version						1.0
+// @Servers.Url					/api/v1
+// @SecurityDefinitions.APIKey	Bearer
+// @In							header
+// @Name						Authorization
+// @Description					Формат: `Bearer {token}`
 func main() {
 	mainMux := http.NewServeMux()
+	RegisterSwagger(mainMux)
+
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

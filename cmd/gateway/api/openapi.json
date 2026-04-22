@@ -1,0 +1,1320 @@
+{
+    "components": {
+        "schemas": {
+            "APIError": {
+                "properties": {
+                    "details": {
+                        "type": "object"
+                    },
+                    "error": {
+                        "example": "INVALID_BODY",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "AnalyticsResponse": {
+                "properties": {
+                    "AvgAttempts": {
+                        "example": 1.2,
+                        "type": "number"
+                    },
+                    "AvgDuration": {
+                        "example": 250000000,
+                        "type": "integer"
+                    },
+                    "FailedCalls": {
+                        "example": 5,
+                        "type": "integer"
+                    },
+                    "MaxDuration": {
+                        "example": 900000000,
+                        "type": "integer"
+                    },
+                    "MinDuration": {
+                        "example": 100000000,
+                        "type": "integer"
+                    },
+                    "StatusStats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "type": "object"
+                    },
+                    "SuccessCalls": {
+                        "example": 37,
+                        "type": "integer"
+                    },
+                    "TotalCalls": {
+                        "example": 42,
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "FetchHeaderValues": {
+                "properties": {
+                    "values": {
+                        "example": [
+                            "application/json"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                    }
+                },
+                "type": "object"
+            },
+            "FetchRequest": {
+                "properties": {
+                    "body": {
+                        "example": "",
+                        "format": "byte",
+                        "type": "string"
+                    },
+                    "description": {
+                        "example": "Health check",
+                        "type": "string"
+                    },
+                    "headers": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/FetchHeaderValues"
+                        },
+                        "type": "object"
+                    },
+                    "id": {
+                        "example": 1,
+                        "type": "integer"
+                    },
+                    "intervalMs": {
+                        "example": 60000,
+                        "type": "integer"
+                    },
+                    "method": {
+                        "enum": [
+                            "GET",
+                            "HEAD",
+                            "POST",
+                            "PUT",
+                            "PATCH",
+                            "DELETE",
+                            "CONNECT",
+                            "OPTIONS",
+                            "TRACE"
+                        ],
+                        "example": "GET",
+                        "type": "string"
+                    },
+                    "timeoutMs": {
+                        "example": 5000,
+                        "type": "integer"
+                    },
+                    "type": {
+                        "enum": [
+                            "Manual",
+                            "Scheduled"
+                        ],
+                        "example": "Manual",
+                        "type": "string"
+                    },
+                    "url": {
+                        "example": "https://example.com/health",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "FetchResponse": {
+                "properties": {
+                    "attempt": {
+                        "example": 1,
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "GatewayError": {
+                "properties": {
+                    "code": {
+                        "example": 3,
+                        "type": "integer"
+                    },
+                    "message": {
+                        "example": "invalid request body",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ModuleDTO": {
+                "properties": {
+                    "description": {
+                        "example": "Checks public endpoints",
+                        "type": "string"
+                    },
+                    "id": {
+                        "example": 1,
+                        "type": "integer"
+                    },
+                    "name": {
+                        "example": "Production monitoring",
+                        "type": "string"
+                    },
+                    "owner_id": {
+                        "example": 7,
+                        "type": "integer"
+                    },
+                    "webhooks": {
+                        "items": {
+                            "$ref": "#/components/schemas/WebhookDTO"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                    }
+                },
+                "type": "object"
+            },
+            "ModuleList": {
+                "properties": {
+                    "modules": {
+                        "items": {
+                            "$ref": "#/components/schemas/ModuleDTO"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                    }
+                },
+                "type": "object"
+            },
+            "ModuleRequestResponse": {
+                "properties": {
+                    "module": {
+                        "$ref": "#/components/schemas/ModuleDTO"
+                    }
+                },
+                "type": "object"
+            },
+            "UserLoginRequest": {
+                "properties": {
+                    "email": {
+                        "example": "user@example.com",
+                        "type": "string"
+                    },
+                    "password": {
+                        "example": "strong-password",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UserLoginResponse": {
+                "properties": {
+                    "token": {
+                        "example": "eyJhbGciOi...",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UserRegisterRequest": {
+                "properties": {
+                    "email": {
+                        "example": "user@example.com",
+                        "type": "string"
+                    },
+                    "name": {
+                        "example": "Maksim",
+                        "type": "string"
+                    },
+                    "password": {
+                        "example": "strong-password",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UserRegisterResponse": {
+                "properties": {
+                    "email": {
+                        "example": "user@example.com",
+                        "type": "string"
+                    },
+                    "name": {
+                        "example": "Maksim",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "WebhookDTO": {
+                "properties": {
+                    "body": {
+                        "example": "",
+                        "format": "byte",
+                        "type": "string"
+                    },
+                    "description": {
+                        "example": "Ping API",
+                        "type": "string"
+                    },
+                    "headers": {
+                        "additionalProperties": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "type": "object"
+                    },
+                    "id": {
+                        "example": 1,
+                        "type": "integer"
+                    },
+                    "interval": {
+                        "example": "1m0s",
+                        "type": "string"
+                    },
+                    "method": {
+                        "enum": [
+                            "GET",
+                            "HEAD",
+                            "POST",
+                            "PUT",
+                            "PATCH",
+                            "DELETE",
+                            "CONNECT",
+                            "OPTIONS",
+                            "TRACE"
+                        ],
+                        "example": "GET",
+                        "type": "string"
+                    },
+                    "module_id": {
+                        "example": 1,
+                        "type": "integer"
+                    },
+                    "timeout": {
+                        "example": "5s",
+                        "type": "string"
+                    },
+                    "url": {
+                        "example": "https://example.com/health",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "WebhookDTORequestResponse": {
+                "properties": {
+                    "webhook": {
+                        "$ref": "#/components/schemas/WebhookDTO"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "Bearer": {
+                "description": "Формат: `Bearer {token}`",
+                "in": "header",
+                "name": "Authorization",
+                "type": "apiKey"
+            }
+        }
+    },
+    "info": {
+        "description": "Единая точка входа в сервис: авторизация, модули, вебхуки, аналитика и ручной запуск HTTP-запросов.",
+        "title": "Auto HTTP Fetcher API",
+        "version": "1.0"
+    },
+    "externalDocs": {
+        "description": "",
+        "url": ""
+    },
+    "paths": {
+        "/analytics": {
+            "get": {
+                "description": "Возвращает агрегированные метрики по выполненным HTTP-запросам: количество вызовов, успешность, статусы, длительность и попытки.",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AnalyticsResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "Получить аналитику",
+                "tags": [
+                    "Аналитика"
+                ]
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Проверяет email и пароль, затем возвращает JWT для защищённых методов.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/UserLoginRequest",
+                                        "summary": "request",
+                                        "description": "Учётные данные"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "Учётные данные",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserLoginResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "415": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Unsupported Media Type"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "Войти в аккаунт",
+                "tags": [
+                    "Авторизация"
+                ]
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Создаёт пользователя и возвращает публичные данные созданного аккаунта.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/UserRegisterRequest",
+                                        "summary": "request",
+                                        "description": "Данные пользователя"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "Данные пользователя",
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserRegisterResponse"
+                                }
+                            }
+                        },
+                        "description": "Created"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "Зарегистрировать пользователя",
+                "tags": [
+                    "Авторизация"
+                ]
+            }
+        },
+        "/fetch": {
+            "post": {
+                "description": "Запускает один HTTP-запрос по переданным параметрам вебхука через gRPC-gateway.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/FetchRequest",
+                                        "summary": "request",
+                                        "description": "Параметры запроса"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "Параметры запроса",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FetchResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GatewayError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GatewayError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "Выполнить HTTP-запрос вручную",
+                "tags": [
+                    "Запуск"
+                ]
+            }
+        },
+        "/module/": {
+            "post": {
+                "description": "Создаёт модуль пользователя вместе со списком вложенных вебхуков.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ModuleRequestResponse",
+                                        "summary": "request",
+                                        "description": "Данные модуля"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "Данные модуля",
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModuleRequestResponse"
+                                }
+                            }
+                        },
+                        "description": "Created"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "415": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Unsupported Media Type"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "summary": "Создать модуль",
+                "tags": [
+                    "Модули"
+                ]
+            },
+            "put": {
+                "description": "Полностью обновляет данные модуля. Модуль должен принадлежать текущему пользователю.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/ModuleRequestResponse",
+                                        "summary": "request",
+                                        "description": "Данные модуля"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "Данные модуля",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModuleRequestResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "415": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Unsupported Media Type"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "summary": "Обновить модуль",
+                "tags": [
+                    "Модули"
+                ]
+            }
+        },
+        "/module/{id}": {
+            "delete": {
+                "description": "Удаляет модуль текущего пользователя по идентификатору.",
+                "parameters": [
+                    {
+                        "description": "ID модуля",
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "summary": "Удалить модуль",
+                "tags": [
+                    "Модули"
+                ]
+            },
+            "get": {
+                "description": "Возвращает один модуль текущего пользователя вместе с его вебхуками.",
+                "parameters": [
+                    {
+                        "description": "ID модуля",
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModuleRequestResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "summary": "Получить модуль",
+                "tags": [
+                    "Модули"
+                ]
+            }
+        },
+        "/module/{module_id}/webhook/": {
+            "post": {
+                "description": "Добавляет вебхук в модуль текущего пользователя.",
+                "parameters": [
+                    {
+                        "description": "ID модуля",
+                        "in": "path",
+                        "name": "module_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/WebhookDTORequestResponse",
+                                        "summary": "request",
+                                        "description": "Данные вебхука"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "Данные вебхука",
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WebhookDTORequestResponse"
+                                }
+                            }
+                        },
+                        "description": "Created"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "415": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Unsupported Media Type"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "summary": "Создать вебхук",
+                "tags": [
+                    "Вебхуки"
+                ]
+            },
+            "put": {
+                "description": "Полностью обновляет вебхук внутри модуля текущего пользователя.",
+                "parameters": [
+                    {
+                        "description": "ID модуля",
+                        "in": "path",
+                        "name": "module_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/WebhookDTORequestResponse",
+                                        "summary": "request",
+                                        "description": "Данные вебхука"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "Данные вебхука",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WebhookDTORequestResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "415": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Unsupported Media Type"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "summary": "Обновить вебхук",
+                "tags": [
+                    "Вебхуки"
+                ]
+            }
+        },
+        "/module/{module_id}/webhook/{webhook_id}": {
+            "delete": {
+                "description": "Удаляет вебхук из модуля текущего пользователя.",
+                "parameters": [
+                    {
+                        "description": "ID модуля",
+                        "in": "path",
+                        "name": "module_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "ID вебхука",
+                        "in": "path",
+                        "name": "webhook_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/WebhookDTORequestResponse",
+                                        "summary": "request",
+                                        "description": "Данные вебхука"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "Данные вебхука",
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "415": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Unsupported Media Type"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "summary": "Удалить вебхук",
+                "tags": [
+                    "Вебхуки"
+                ]
+            }
+        },
+        "/modules/": {
+            "get": {
+                "description": "Возвращает все модули текущего пользователя.",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModuleList"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIError"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "summary": "Получить список модулей",
+                "tags": [
+                    "Модули"
+                ]
+            }
+        }
+    },
+    "openapi": "3.1.0",
+    "servers": [
+        {
+            "url": "/api/v1"
+        }
+    ]
+}
