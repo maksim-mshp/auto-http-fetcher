@@ -9,13 +9,18 @@ import (
 	redis "github.com/redis/go-redis/v9"
 )
 
+type RedisClientInterface interface {
+	Get(ctx context.Context, key string) *redis.StringCmd
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd
+}
+
 type AnalyticsService struct {
 	repo  Repository
-	redis *redis.Client
+	redis RedisClientInterface
 	ttl   time.Duration
 }
 
-func NewAnalyticsService(repo Repository, redis *redis.Client, ttl time.Duration) *AnalyticsService {
+func NewAnalyticsService(repo Repository, redis RedisClientInterface, ttl time.Duration) *AnalyticsService {
 	return &AnalyticsService{
 		repo:  repo,
 		redis: redis,
