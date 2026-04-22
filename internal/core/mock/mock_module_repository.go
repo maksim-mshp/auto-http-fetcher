@@ -2,7 +2,9 @@ package mock
 
 import (
 	"auto-http-fetcher/internal/module/domain"
+
 	"context"
+
 	"github.com/stretchr/testify/mock"
 )
 

@@ -2,6 +2,7 @@ package mock
 
 import (
 	kafka2 "auto-http-fetcher/internal/module/infra/kafka"
+
 	"github.com/stretchr/testify/mock"
 )
 
