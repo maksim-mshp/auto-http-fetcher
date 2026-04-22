@@ -1,4 +1,19 @@
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      gateway:
+        condition: service_started
+
+    networks:
+      - fetcher-network
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     container_name: auto-http-fetcher-postgres
@@ -6,8 +21,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: auto-http-fetcher
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -21,8 +36,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: auto-http-fetcher-redis
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     volumes:
       - redis_data:/data
     networks:
@@ -36,8 +51,8 @@ services:
   kafka:
     image: apache/kafka:3.7.0
     container_name: auto-http-fetcher-kafka
-    ports:
-      - "9092:9092"
+    expose:
+      - "9092"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -65,8 +80,8 @@ services:
     build:
       context: .
       dockerfile: cmd/analytics/Dockerfile
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     environment:
       POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
       REDIS_URL: redis:6379
@@ -90,8 +105,8 @@ services:
     build:
       context: .
       dockerfile: cmd/fetcher/Dockerfile
-    ports:
-      - "50051:50051"
+    expose:
+      - "50051"
     environment:
       POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
       GRPC_PORT: :50051
@@ -142,8 +157,8 @@ services:
     build:
       context: .
       dockerfile: cmd/modules/Dockerfile
-    ports:
-      - "8090:8090"
+    expose:
+      - "8090"
     environment:
       POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
       MODULES_PORT: :8090
@@ -171,8 +186,8 @@ services:
     build:
       context: .
       dockerfile: cmd/users/Dockerfile
-    ports:
-      - "8095:8095"
+    expose:
+      - "8095"
     environment:
       POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
       USERS_PORT: :8095
@@ -199,9 +214,13 @@ services:
       ANALYTICS_ADDR: analytics:8080
       USERS_ADDR: users:8095
       MODULES_ADDR: modules:8090
-    ports:
-      - "8081:8081"
+    expose:
+      - "8081"
     depends_on:
+      users:
+        condition: service_started
+      modules:
+        condition: service_started
       fetcher:
         condition: service_started
     networks:
