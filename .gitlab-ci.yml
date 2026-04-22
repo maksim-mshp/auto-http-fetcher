@@ -46,7 +46,8 @@ test:
   script:
     - make install-test-deps
     - make test
-    - make coverage-check COVERAGE_THRESHOLD=30
+    - make coverage-check COVERAGE_THRESHOLD=0
+    - make service-coverage-check COVERAGE_THRESHOLD=30
   coverage: '/Total coverage:\s+\d+(?:\.\d+)?%/'
   artifacts:
     when: always

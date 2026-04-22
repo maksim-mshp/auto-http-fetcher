@@ -13,7 +13,7 @@ GO_PACKAGES ?= ./...
 GO_BUILD_FLAGS ?= -trimpath
 GO_LDFLAGS ?= -s -w
 
-.PHONY: install-deps install-lint-deps install-test-deps lint build test coverage coverage-check clean
+.PHONY: install-deps install-lint-deps install-test-deps lint build test coverage coverage-check service-coverage-check clean
 .PHONY: $(SERVICES:%=build-%)
 
 install-deps: install-lint-deps install-test-deps
@@ -49,6 +49,9 @@ coverage-check:
 	@coverage=$$(go tool cover "-func=$(COVERAGE_PROFILE)" | awk '/^total:/ { sub(/%/,"",$$3); print $$3 }'); \
 	echo "Total coverage: $$coverage%"; \
 	awk -v coverage="$$coverage" -v threshold="$(COVERAGE_THRESHOLD)" 'BEGIN { if (coverage + 0 < threshold + 0) { printf "Coverage %.1f%% is below required %.1f%%\n", coverage, threshold; exit 1 } }'
+
+service-coverage-check:
+	@COVERAGE_DIR="$(COVERAGE_DIR)" COVERAGE_THRESHOLD="$(COVERAGE_THRESHOLD)" SERVICES="$(SERVICES)" sh ./scripts/check-service-coverage.sh
 
 clean:
 	@sh -c "rm -rf $(BIN_DIR) $(REPORTS_DIR) $(COVERAGE_DIR)"
