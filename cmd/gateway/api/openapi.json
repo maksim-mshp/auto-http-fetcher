@@ -1,9 +1,10 @@
 {
     "components": {
         "schemas": {
-            "APIError": {
+            "auto-http-fetcher_internal_module_infra_http_handlers.APIError": {
                 "properties": {
                     "details": {
+                        "additionalProperties": {},
                         "type": "object"
                     },
                     "error": {
@@ -13,46 +14,33 @@
                 },
                 "type": "object"
             },
-            "AnalyticsResponse": {
+            "auto-http-fetcher_internal_user_infra_http.APIError": {
                 "properties": {
-                    "AvgAttempts": {
-                        "example": 1.2,
-                        "type": "number"
-                    },
-                    "AvgDuration": {
-                        "example": 250000000,
-                        "type": "integer"
-                    },
-                    "FailedCalls": {
-                        "example": 5,
-                        "type": "integer"
-                    },
-                    "MaxDuration": {
-                        "example": 900000000,
-                        "type": "integer"
-                    },
-                    "MinDuration": {
-                        "example": 100000000,
-                        "type": "integer"
-                    },
-                    "StatusStats": {
-                        "additionalProperties": {
-                            "type": "number"
-                        },
+                    "details": {
+                        "additionalProperties": {},
                         "type": "object"
                     },
-                    "SuccessCalls": {
-                        "example": 37,
-                        "type": "integer"
-                    },
-                    "TotalCalls": {
-                        "example": 42,
-                        "type": "integer"
+                    "error": {
+                        "example": "INVALID_BODY",
+                        "type": "string"
                     }
                 },
                 "type": "object"
             },
-            "FetchHeaderValues": {
+            "auto-http-fetcher_internal_webhook_infra_http_handlers.APIError": {
+                "properties": {
+                    "details": {
+                        "additionalProperties": {},
+                        "type": "object"
+                    },
+                    "error": {
+                        "example": "INVALID_BODY",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "grpc.FetchHeaderValues": {
                 "properties": {
                     "values": {
                         "example": [
@@ -67,7 +55,7 @@
                 },
                 "type": "object"
             },
-            "FetchRequest": {
+            "grpc.FetchRequest": {
                 "properties": {
                     "body": {
                         "example": "",
@@ -80,7 +68,7 @@
                     },
                     "headers": {
                         "additionalProperties": {
-                            "$ref": "#/components/schemas/FetchHeaderValues"
+                            "$ref": "#/components/schemas/grpc.FetchHeaderValues"
                         },
                         "type": "object"
                     },
@@ -126,7 +114,7 @@
                 },
                 "type": "object"
             },
-            "FetchResponse": {
+            "grpc.FetchResponse": {
                 "properties": {
                     "attempt": {
                         "example": 1,
@@ -135,7 +123,7 @@
                 },
                 "type": "object"
             },
-            "GatewayError": {
+            "grpc.GatewayError": {
                 "properties": {
                     "code": {
                         "example": 3,
@@ -148,7 +136,46 @@
                 },
                 "type": "object"
             },
-            "ModuleDTO": {
+            "handlers.ModuleList": {
+                "properties": {
+                    "modules": {
+                        "items": {
+                            "$ref": "#/components/schemas/http.ModuleDTO"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                    }
+                },
+                "type": "object"
+            },
+            "handlers.ModuleRequestResponse": {
+                "properties": {
+                    "module": {
+                        "$ref": "#/components/schemas/http.ModuleDTO"
+                    }
+                },
+                "type": "object"
+            },
+            "handlers.WebhookDTORequestResponse": {
+                "properties": {
+                    "webhook": {
+                        "$ref": "#/components/schemas/http.WebhookDTO"
+                    }
+                },
+                "type": "object"
+            },
+            "http.AnalyticsResponse": {
+                "properties": {
+                    "statusStats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "http.ModuleDTO": {
                 "properties": {
                     "description": {
                         "example": "Checks public endpoints",
@@ -168,7 +195,7 @@
                     },
                     "webhooks": {
                         "items": {
-                            "$ref": "#/components/schemas/WebhookDTO"
+                            "$ref": "#/components/schemas/http.WebhookDTO"
                         },
                         "type": "array",
                         "uniqueItems": false
@@ -176,27 +203,7 @@
                 },
                 "type": "object"
             },
-            "ModuleList": {
-                "properties": {
-                    "modules": {
-                        "items": {
-                            "$ref": "#/components/schemas/ModuleDTO"
-                        },
-                        "type": "array",
-                        "uniqueItems": false
-                    }
-                },
-                "type": "object"
-            },
-            "ModuleRequestResponse": {
-                "properties": {
-                    "module": {
-                        "$ref": "#/components/schemas/ModuleDTO"
-                    }
-                },
-                "type": "object"
-            },
-            "UserLoginRequest": {
+            "http.UserLoginRequest": {
                 "properties": {
                     "email": {
                         "example": "user@example.com",
@@ -209,7 +216,7 @@
                 },
                 "type": "object"
             },
-            "UserLoginResponse": {
+            "http.UserLoginResponse": {
                 "properties": {
                     "token": {
                         "example": "eyJhbGciOi...",
@@ -218,7 +225,7 @@
                 },
                 "type": "object"
             },
-            "UserRegisterRequest": {
+            "http.UserRegisterRequest": {
                 "properties": {
                     "email": {
                         "example": "user@example.com",
@@ -235,7 +242,7 @@
                 },
                 "type": "object"
             },
-            "UserRegisterResponse": {
+            "http.UserRegisterResponse": {
                 "properties": {
                     "email": {
                         "example": "user@example.com",
@@ -248,7 +255,7 @@
                 },
                 "type": "object"
             },
-            "WebhookDTO": {
+            "http.WebhookDTO": {
                 "properties": {
                     "body": {
                         "example": "",
@@ -305,14 +312,6 @@
                     }
                 },
                 "type": "object"
-            },
-            "WebhookDTORequestResponse": {
-                "properties": {
-                    "webhook": {
-                        "$ref": "#/components/schemas/WebhookDTO"
-                    }
-                },
-                "type": "object"
             }
         },
         "securitySchemes": {
@@ -342,7 +341,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AnalyticsResponse"
+                                    "$ref": "#/components/schemas/http.AnalyticsResponse"
                                 }
                             }
                         },
@@ -377,7 +376,7 @@
                                         "type": "object"
                                     },
                                     {
-                                        "$ref": "#/components/schemas/UserLoginRequest",
+                                        "$ref": "#/components/schemas/http.UserLoginRequest",
                                         "summary": "request",
                                         "description": "Учётные данные"
                                     }
@@ -393,7 +392,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UserLoginResponse"
+                                    "$ref": "#/components/schemas/http.UserLoginResponse"
                                 }
                             }
                         },
@@ -403,7 +402,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError"
                                 }
                             }
                         },
@@ -413,7 +412,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError"
                                 }
                             }
                         },
@@ -423,7 +422,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError"
                                 }
                             }
                         },
@@ -433,7 +432,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError"
                                 }
                             }
                         },
@@ -443,7 +442,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError"
                                 }
                             }
                         },
@@ -468,7 +467,7 @@
                                         "type": "object"
                                     },
                                     {
-                                        "$ref": "#/components/schemas/UserRegisterRequest",
+                                        "$ref": "#/components/schemas/http.UserRegisterRequest",
                                         "summary": "request",
                                         "description": "Данные пользователя"
                                     }
@@ -484,7 +483,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UserRegisterResponse"
+                                    "$ref": "#/components/schemas/http.UserRegisterResponse"
                                 }
                             }
                         },
@@ -494,7 +493,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError"
                                 }
                             }
                         },
@@ -504,7 +503,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError"
                                 }
                             }
                         },
@@ -514,7 +513,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError"
                                 }
                             }
                         },
@@ -539,7 +538,7 @@
                                         "type": "object"
                                     },
                                     {
-                                        "$ref": "#/components/schemas/FetchRequest",
+                                        "$ref": "#/components/schemas/grpc.FetchRequest",
                                         "summary": "request",
                                         "description": "Параметры запроса"
                                     }
@@ -555,7 +554,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/FetchResponse"
+                                    "$ref": "#/components/schemas/grpc.FetchResponse"
                                 }
                             }
                         },
@@ -565,7 +564,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/GatewayError"
+                                    "$ref": "#/components/schemas/grpc.GatewayError"
                                 }
                             }
                         },
@@ -575,7 +574,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/GatewayError"
+                                    "$ref": "#/components/schemas/grpc.GatewayError"
                                 }
                             }
                         },
@@ -600,7 +599,7 @@
                                         "type": "object"
                                     },
                                     {
-                                        "$ref": "#/components/schemas/ModuleRequestResponse",
+                                        "$ref": "#/components/schemas/handlers.ModuleRequestResponse",
                                         "summary": "request",
                                         "description": "Данные модуля"
                                     }
@@ -616,7 +615,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ModuleRequestResponse"
+                                    "$ref": "#/components/schemas/handlers.ModuleRequestResponse"
                                 }
                             }
                         },
@@ -626,7 +625,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -646,7 +645,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -656,7 +655,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -666,7 +665,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -694,7 +693,7 @@
                                         "type": "object"
                                     },
                                     {
-                                        "$ref": "#/components/schemas/ModuleRequestResponse",
+                                        "$ref": "#/components/schemas/handlers.ModuleRequestResponse",
                                         "summary": "request",
                                         "description": "Данные модуля"
                                     }
@@ -710,7 +709,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ModuleRequestResponse"
+                                    "$ref": "#/components/schemas/handlers.ModuleRequestResponse"
                                 }
                             }
                         },
@@ -720,7 +719,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -740,7 +739,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -750,7 +749,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -760,7 +759,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -770,7 +769,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -810,7 +809,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -830,7 +829,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -840,7 +839,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -875,7 +874,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ModuleRequestResponse"
+                                    "$ref": "#/components/schemas/handlers.ModuleRequestResponse"
                                 }
                             }
                         },
@@ -885,7 +884,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -905,7 +904,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -915,7 +914,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -956,7 +955,7 @@
                                         "type": "object"
                                     },
                                     {
-                                        "$ref": "#/components/schemas/WebhookDTORequestResponse",
+                                        "$ref": "#/components/schemas/handlers.WebhookDTORequestResponse",
                                         "summary": "request",
                                         "description": "Данные вебхука"
                                     }
@@ -972,7 +971,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/WebhookDTORequestResponse"
+                                    "$ref": "#/components/schemas/handlers.WebhookDTORequestResponse"
                                 }
                             }
                         },
@@ -982,7 +981,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1002,7 +1001,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1012,7 +1011,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1022,7 +1021,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1061,7 +1060,7 @@
                                         "type": "object"
                                     },
                                     {
-                                        "$ref": "#/components/schemas/WebhookDTORequestResponse",
+                                        "$ref": "#/components/schemas/handlers.WebhookDTORequestResponse",
                                         "summary": "request",
                                         "description": "Данные вебхука"
                                     }
@@ -1077,7 +1076,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/WebhookDTORequestResponse"
+                                    "$ref": "#/components/schemas/handlers.WebhookDTORequestResponse"
                                 }
                             }
                         },
@@ -1087,7 +1086,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1107,7 +1106,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1117,7 +1116,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1127,7 +1126,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1168,26 +1167,6 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "oneOf": [
-                                    {
-                                        "type": "object"
-                                    },
-                                    {
-                                        "$ref": "#/components/schemas/WebhookDTORequestResponse",
-                                        "summary": "request",
-                                        "description": "Данные вебхука"
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    "description": "Данные вебхука",
-                    "required": true
-                },
                 "responses": {
                     "204": {
                         "description": "No Content"
@@ -1196,7 +1175,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1216,7 +1195,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1226,7 +1205,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1236,7 +1215,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1246,7 +1225,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError"
                                 }
                             }
                         },
@@ -1272,7 +1251,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ModuleList"
+                                    "$ref": "#/components/schemas/handlers.ModuleList"
                                 }
                             }
                         },
@@ -1292,7 +1271,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIError"
+                                    "$ref": "#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError"
                                 }
                             }
                         },

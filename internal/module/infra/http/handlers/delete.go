@@ -9,6 +9,19 @@ import (
 	"strconv"
 )
 
+// Delete godoc
+// @Summary		Удалить модуль
+// @Description	Удаляет модуль текущего пользователя по идентификатору.
+// @Tags		Модули
+// @Produce		json
+// @Param		id path int true "ID модуля"
+// @Success		204
+// @Failure		400 {object} APIError
+// @Failure		401 {string} string
+// @Failure		404 {object} APIError
+// @Failure		500 {object} APIError
+// @Router		/module/{id} [delete]
+// @Security	Bearer
 func (m *ModuleHandlers) Delete(w http.ResponseWriter, r *http.Request) {
 	m.logger.Debug("module delete endpoint called")
 

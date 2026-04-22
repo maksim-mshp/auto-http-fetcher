@@ -1,42 +1,33 @@
 components:
   schemas:
-    APIError:
+    auto-http-fetcher_internal_module_infra_http_handlers.APIError:
       properties:
         details:
+          additionalProperties: {}
           type: object
         error:
           example: INVALID_BODY
           type: string
       type: object
-    AnalyticsResponse:
+    auto-http-fetcher_internal_user_infra_http.APIError:
       properties:
-        AvgAttempts:
-          example: 1.2
-          type: number
-        AvgDuration:
-          example: 250000000
-          type: integer
-        FailedCalls:
-          example: 5
-          type: integer
-        MaxDuration:
-          example: 900000000
-          type: integer
-        MinDuration:
-          example: 100000000
-          type: integer
-        StatusStats:
-          additionalProperties:
-            type: number
+        details:
+          additionalProperties: {}
           type: object
-        SuccessCalls:
-          example: 37
-          type: integer
-        TotalCalls:
-          example: 42
-          type: integer
+        error:
+          example: INVALID_BODY
+          type: string
       type: object
-    FetchHeaderValues:
+    auto-http-fetcher_internal_webhook_infra_http_handlers.APIError:
+      properties:
+        details:
+          additionalProperties: {}
+          type: object
+        error:
+          example: INVALID_BODY
+          type: string
+      type: object
+    grpc.FetchHeaderValues:
       properties:
         values:
           example:
@@ -46,7 +37,7 @@ components:
           type: array
           uniqueItems: false
       type: object
-    FetchRequest:
+    grpc.FetchRequest:
       properties:
         body:
           example: ""
@@ -57,7 +48,7 @@ components:
           type: string
         headers:
           additionalProperties:
-            $ref: '#/components/schemas/FetchHeaderValues'
+            $ref: '#/components/schemas/grpc.FetchHeaderValues'
           type: object
         id:
           example: 1
@@ -91,13 +82,13 @@ components:
           example: https://example.com/health
           type: string
       type: object
-    FetchResponse:
+    grpc.FetchResponse:
       properties:
         attempt:
           example: 1
           type: integer
       type: object
-    GatewayError:
+    grpc.GatewayError:
       properties:
         code:
           example: 3
@@ -106,7 +97,32 @@ components:
           example: invalid request body
           type: string
       type: object
-    ModuleDTO:
+    handlers.ModuleList:
+      properties:
+        modules:
+          items:
+            $ref: '#/components/schemas/http.ModuleDTO'
+          type: array
+          uniqueItems: false
+      type: object
+    handlers.ModuleRequestResponse:
+      properties:
+        module:
+          $ref: '#/components/schemas/http.ModuleDTO'
+      type: object
+    handlers.WebhookDTORequestResponse:
+      properties:
+        webhook:
+          $ref: '#/components/schemas/http.WebhookDTO'
+      type: object
+    http.AnalyticsResponse:
+      properties:
+        statusStats:
+          additionalProperties:
+            type: number
+          type: object
+      type: object
+    http.ModuleDTO:
       properties:
         description:
           example: Checks public endpoints
@@ -122,24 +138,11 @@ components:
           type: integer
         webhooks:
           items:
-            $ref: '#/components/schemas/WebhookDTO'
+            $ref: '#/components/schemas/http.WebhookDTO'
           type: array
           uniqueItems: false
       type: object
-    ModuleList:
-      properties:
-        modules:
-          items:
-            $ref: '#/components/schemas/ModuleDTO'
-          type: array
-          uniqueItems: false
-      type: object
-    ModuleRequestResponse:
-      properties:
-        module:
-          $ref: '#/components/schemas/ModuleDTO'
-      type: object
-    UserLoginRequest:
+    http.UserLoginRequest:
       properties:
         email:
           example: user@example.com
@@ -148,13 +151,13 @@ components:
           example: strong-password
           type: string
       type: object
-    UserLoginResponse:
+    http.UserLoginResponse:
       properties:
         token:
           example: eyJhbGciOi...
           type: string
       type: object
-    UserRegisterRequest:
+    http.UserRegisterRequest:
       properties:
         email:
           example: user@example.com
@@ -166,7 +169,7 @@ components:
           example: strong-password
           type: string
       type: object
-    UserRegisterResponse:
+    http.UserRegisterResponse:
       properties:
         email:
           example: user@example.com
@@ -175,7 +178,7 @@ components:
           example: Maksim
           type: string
       type: object
-    WebhookDTO:
+    http.WebhookDTO:
       properties:
         body:
           example: ""
@@ -219,11 +222,6 @@ components:
           example: https://example.com/health
           type: string
       type: object
-    WebhookDTORequestResponse:
-      properties:
-        webhook:
-          $ref: '#/components/schemas/WebhookDTO'
-      type: object
   securitySchemes:
     Bearer:
       description: 'Формат: `Bearer {token}`'
@@ -249,7 +247,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AnalyticsResponse'
+                $ref: '#/components/schemas/http.AnalyticsResponse'
           description: OK
         "500":
           content:
@@ -269,7 +267,7 @@ paths:
             schema:
               oneOf:
               - type: object
-              - $ref: '#/components/schemas/UserLoginRequest'
+              - $ref: '#/components/schemas/http.UserLoginRequest'
                 description: Учётные данные
                 summary: request
         description: Учётные данные
@@ -279,37 +277,37 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserLoginResponse'
+                $ref: '#/components/schemas/http.UserLoginResponse'
           description: OK
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
           description: Bad Request
         "403":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
           description: Forbidden
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
           description: Not Found
         "415":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
           description: Unsupported Media Type
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
           description: Internal Server Error
       summary: Войти в аккаунт
       tags:
@@ -323,7 +321,7 @@ paths:
             schema:
               oneOf:
               - type: object
-              - $ref: '#/components/schemas/UserRegisterRequest'
+              - $ref: '#/components/schemas/http.UserRegisterRequest'
                 description: Данные пользователя
                 summary: request
         description: Данные пользователя
@@ -333,25 +331,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserRegisterResponse'
+                $ref: '#/components/schemas/http.UserRegisterResponse'
           description: Created
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
           description: Bad Request
         "409":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
           description: Conflict
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
           description: Internal Server Error
       summary: Зарегистрировать пользователя
       tags:
@@ -366,7 +364,7 @@ paths:
             schema:
               oneOf:
               - type: object
-              - $ref: '#/components/schemas/FetchRequest'
+              - $ref: '#/components/schemas/grpc.FetchRequest'
                 description: Параметры запроса
                 summary: request
         description: Параметры запроса
@@ -376,19 +374,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FetchResponse'
+                $ref: '#/components/schemas/grpc.FetchResponse'
           description: OK
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GatewayError'
+                $ref: '#/components/schemas/grpc.GatewayError'
           description: Bad Request
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GatewayError'
+                $ref: '#/components/schemas/grpc.GatewayError'
           description: Internal Server Error
       summary: Выполнить HTTP-запрос вручную
       tags:
@@ -402,7 +400,7 @@ paths:
             schema:
               oneOf:
               - type: object
-              - $ref: '#/components/schemas/ModuleRequestResponse'
+              - $ref: '#/components/schemas/handlers.ModuleRequestResponse'
                 description: Данные модуля
                 summary: request
         description: Данные модуля
@@ -412,13 +410,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModuleRequestResponse'
+                $ref: '#/components/schemas/handlers.ModuleRequestResponse'
           description: Created
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Bad Request
         "401":
           content:
@@ -430,19 +428,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Not Found
         "415":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Unsupported Media Type
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Internal Server Error
       security:
       - Bearer: []
@@ -458,7 +456,7 @@ paths:
             schema:
               oneOf:
               - type: object
-              - $ref: '#/components/schemas/ModuleRequestResponse'
+              - $ref: '#/components/schemas/handlers.ModuleRequestResponse'
                 description: Данные модуля
                 summary: request
         description: Данные модуля
@@ -468,13 +466,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModuleRequestResponse'
+                $ref: '#/components/schemas/handlers.ModuleRequestResponse'
           description: OK
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Bad Request
         "401":
           content:
@@ -486,25 +484,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Forbidden
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Not Found
         "415":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Unsupported Media Type
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Internal Server Error
       security:
       - Bearer: []
@@ -528,7 +526,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Bad Request
         "401":
           content:
@@ -540,13 +538,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Not Found
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Internal Server Error
       security:
       - Bearer: []
@@ -567,13 +565,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModuleRequestResponse'
+                $ref: '#/components/schemas/handlers.ModuleRequestResponse'
           description: OK
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Bad Request
         "401":
           content:
@@ -585,13 +583,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Not Found
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Internal Server Error
       security:
       - Bearer: []
@@ -614,7 +612,7 @@ paths:
             schema:
               oneOf:
               - type: object
-              - $ref: '#/components/schemas/WebhookDTORequestResponse'
+              - $ref: '#/components/schemas/handlers.WebhookDTORequestResponse'
                 description: Данные вебхука
                 summary: request
         description: Данные вебхука
@@ -624,13 +622,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookDTORequestResponse'
+                $ref: '#/components/schemas/handlers.WebhookDTORequestResponse'
           description: Created
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Bad Request
         "401":
           content:
@@ -642,19 +640,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Not Found
         "415":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Unsupported Media Type
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Internal Server Error
       security:
       - Bearer: []
@@ -676,7 +674,7 @@ paths:
             schema:
               oneOf:
               - type: object
-              - $ref: '#/components/schemas/WebhookDTORequestResponse'
+              - $ref: '#/components/schemas/handlers.WebhookDTORequestResponse'
                 description: Данные вебхука
                 summary: request
         description: Данные вебхука
@@ -686,13 +684,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookDTORequestResponse'
+                $ref: '#/components/schemas/handlers.WebhookDTORequestResponse'
           description: OK
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Bad Request
         "401":
           content:
@@ -704,19 +702,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Not Found
         "415":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Unsupported Media Type
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Internal Server Error
       security:
       - Bearer: []
@@ -739,17 +737,6 @@ paths:
         required: true
         schema:
           type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              oneOf:
-              - type: object
-              - $ref: '#/components/schemas/WebhookDTORequestResponse'
-                description: Данные вебхука
-                summary: request
-        description: Данные вебхука
-        required: true
       responses:
         "204":
           description: No Content
@@ -757,7 +744,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Bad Request
         "401":
           content:
@@ -769,25 +756,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Not Found
         "409":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Conflict
         "415":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Unsupported Media Type
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
           description: Internal Server Error
       security:
       - Bearer: []
@@ -802,7 +789,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModuleList'
+                $ref: '#/components/schemas/handlers.ModuleList'
           description: OK
         "401":
           content:
@@ -814,7 +801,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
           description: Internal Server Error
       security:
       - Bearer: []

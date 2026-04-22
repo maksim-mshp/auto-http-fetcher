@@ -8,5 +8,5 @@ lint:
 	@golangci-lint run ./...
 
 openapi:
-	@swag init -g main.go --dir cmd/gateway --output cmd/gateway/api --outputTypes yaml,json --v3.1
+	@swag init -g main.go --dir cmd/gateway,internal/analytics/domain,internal/analytics/infra/http,internal/core/http,internal/module/infra/http,internal/module/infra/http/handlers,internal/response/infra/grpc,internal/user/infra/http,internal/webhook/infra/http,internal/webhook/infra/http/handlers --parseInternal --parseDependency --output cmd/gateway/api --outputTypes yaml,json --v3.1
 	@powershell -NoProfile -Command "Move-Item -Force cmd/gateway/api/swagger.yaml cmd/gateway/api/openapi.yml; Move-Item -Force cmd/gateway/api/swagger.json cmd/gateway/api/openapi.json"

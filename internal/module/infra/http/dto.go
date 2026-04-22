@@ -15,10 +15,10 @@ type ModuleList struct {
 }
 
 type ModuleDTO struct {
-	ID          int                      `json:"id"`
-	OwnerId     int                      `json:"owner_id"`
-	Name        string                   `json:"name"`
-	Description string                   `json:"description"`
+	ID          int                      `json:"id" example:"1"`
+	OwnerId     int                      `json:"owner_id" example:"7"`
+	Name        string                   `json:"name" example:"Production monitoring"`
+	Description string                   `json:"description" example:"Checks public endpoints"`
 	Webhooks    []*webhookDTO.WebhookDTO `json:"webhooks"`
 }
 

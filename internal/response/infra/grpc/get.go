@@ -11,6 +11,17 @@ import (
 	"time"
 )
 
+// Fetch godoc
+// @Summary		Выполнить HTTP-запрос вручную
+// @Description	Запускает один HTTP-запрос по переданным параметрам вебхука через gRPC-gateway.
+// @Tags		Запуск
+// @Accept		json
+// @Produce		json
+// @Param		request body FetchRequest true "Параметры запроса"
+// @Success		200 {object} FetchResponse
+// @Failure		400 {object} GatewayError
+// @Failure		500 {object} GatewayError
+// @Router		/fetch [post]
 func (h *Handler) Fetch(ctx context.Context, req *fetcherpb.FetchRequest) (*fetcherpb.FetchResponse, error) {
 	wh := webhookDomain.Webhook{
 		ID:          int(req.Id),

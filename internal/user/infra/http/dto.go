@@ -1,19 +1,19 @@
 package http
 
 type UserRegisterRequest struct {
-	Password string `json:"password"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
+	Password string `json:"password" example:"strong-password"`
+	Name     string `json:"name" example:"Maksim"`
+	Email    string `json:"email" example:"user@example.com"`
 }
 type UserRegisterResponse struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	Email string `json:"email" example:"user@example.com"`
+	Name  string `json:"name" example:"Maksim"`
 }
 
 type UserLoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" example:"user@example.com"`
+	Password string `json:"password" example:"strong-password"`
 }
 type UserLoginResponse struct {
-	Token string `json:"token"`
+	Token string `json:"token" example:"eyJhbGciOi..."`
 }

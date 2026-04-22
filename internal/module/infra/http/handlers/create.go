@@ -9,6 +9,21 @@ import (
 	"net/http"
 )
 
+// Create godoc
+// @Summary		Создать модуль
+// @Description	Создаёт модуль пользователя вместе со списком вложенных вебхуков.
+// @Tags		Модули
+// @Accept		json
+// @Produce		json
+// @Param		request body ModuleRequestResponse true "Данные модуля"
+// @Success		201 {object} ModuleRequestResponse
+// @Failure		400 {object} APIError
+// @Failure		401 {string} string
+// @Failure		404 {object} APIError
+// @Failure		415 {object} APIError
+// @Failure		500 {object} APIError
+// @Router		/module/ [post]
+// @Security	Bearer
 func (m *ModuleHandlers) Create(w http.ResponseWriter, r *http.Request) {
 	m.logger.Debug("module create endpoint called")
 
