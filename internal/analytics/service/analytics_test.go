@@ -31,7 +31,7 @@ func TestAnalyticsService_Get_FromCache(t *testing.T) {
 		FailedCalls:  20,
 	}
 	data, _ := json.Marshal(expectedAnalytics)
-	mr.Set("analytics", string(data))
+	_ = mr.Set("analytics", string(data))
 
 	mockRepo := &mock.MockAnalyticsRepository{
 		GetFunc: func(ctx context.Context) (*domain.Analytics, error) {
@@ -82,7 +82,7 @@ func TestAnalyticsService_Get_FromRepository(t *testing.T) {
 
 	stored, _ := mr.Get("analytics")
 	var cached domain.Analytics
-	json.Unmarshal([]byte(stored), &cached)
+	_ = json.Unmarshal([]byte(stored), &cached)
 	assert.Equal(t, 200, cached.TotalCalls)
 }
 
