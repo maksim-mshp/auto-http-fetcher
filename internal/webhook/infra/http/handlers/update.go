@@ -10,6 +10,8 @@ import (
 )
 
 func (wh *WebhookHandlers) Update(w http.ResponseWriter, r *http.Request) {
+	wh.logger.Debug("webhook update endpoint called")
+
 	user, err := middleware.GetUserIDFromContext(r.Context())
 	if err != nil {
 		coreHttp.SendErrorJSON(wh.logger, w, &coreHttp.ErrUnauthorized)

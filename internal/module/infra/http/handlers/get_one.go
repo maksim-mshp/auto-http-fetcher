@@ -11,6 +11,8 @@ import (
 )
 
 func (m *ModuleHandlers) GetOne(w http.ResponseWriter, r *http.Request) {
+	m.logger.Debug("module get one endpoint called")
+
 	user, err := middleware.GetUserIDFromContext(r.Context())
 	if err != nil {
 		coreHttp.SendErrorJSON(m.logger, w, &coreHttp.ErrUnauthorized)
