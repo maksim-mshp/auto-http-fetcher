@@ -17,6 +17,10 @@ type Message struct {
 	Error      error
 }
 
+type DLQ interface {
+	Push(userID int, msg kafka2.WebhookKafkaDTO, err error)
+}
+
 type DeadLetterQueue struct {
 	mu     *sync.Mutex
 	queue  []*Message
