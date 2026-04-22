@@ -174,8 +174,8 @@ func TestJWT_GenerateAndParse_Integration(t *testing.T) {
 	require.NotNil(t, claims)
 
 	assert.Equal(t, userID, claims.UserID)
-	assert.True(t, claims.ExpiresAt.Time.After(time.Now()))
-	assert.True(t, claims.IssuedAt.Time.Before(time.Now()))
+	assert.True(t, claims.ExpiresAt.After(time.Now()))
+	assert.True(t, claims.IssuedAt.Before(time.Now()))
 }
 
 func TestJWT_Claims_Structure(t *testing.T) {
