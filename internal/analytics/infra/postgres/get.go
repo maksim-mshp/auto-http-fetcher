@@ -3,14 +3,10 @@ package infra
 import (
 	"auto-http-fetcher/internal/analytics/domain"
 	"context"
-	"time"
 )
 
 func (p *PGAnalyticsRepo) Get(ctx context.Context) (*domain.Analytics, error) {
 	var analytics domain.Analytics
-	var avgDuration int64
-	var minDuration int64
-	var maxDuration int64
 	query := `SELECT 
 		COUNT(*) as total_calls,
 		COUNT(*) FILTER (WHERE status = 'success') as success_calls,
@@ -22,14 +18,10 @@ func (p *PGAnalyticsRepo) Get(ctx context.Context) (*domain.Analytics, error) {
 	FROM responses`
 	statusStatsQuery := `SELECT status_code, COUNT(*) * 100.0 / SUM(COUNT(*)) OVER () as percentage FROM responses GROUP BY status_code`
 
-	err := p.pool.QueryRow(ctx, query).Scan(&analytics.TotalCalls, &analytics.SuccessCalls, &analytics.FailedCalls, &avgDuration, &minDuration, &maxDuration, &analytics.AvgAttempts)
+	err := p.pool.QueryRow(ctx, query).Scan(&analytics.TotalCalls, &analytics.SuccessCalls, &analytics.FailedCalls, &analytics.AvgDuration, &analytics.MinDuration, &analytics.MaxDuration, &analytics.AvgAttempts)
 	if err != nil {
 		return nil, err
 	}
-
-	analytics.AvgDuration = time.Duration(avgDuration) * time.Millisecond
-	analytics.MinDuration = time.Duration(minDuration) * time.Millisecond
-	analytics.MaxDuration = time.Duration(maxDuration) * time.Millisecond
 
 	statusStatsRows, err := p.pool.Query(ctx, statusStatsQuery)
 	if err != nil {
