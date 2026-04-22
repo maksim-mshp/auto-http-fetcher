@@ -153,6 +153,27 @@ services:
       - fetcher-network
     restart: unless-stopped
 
+  users:
+    image: users:latest
+    container_name: auto-http-fetcher-users
+    build:
+      context: .
+      dockerfile: cmd/users/Dockerfile
+    ports:
+      - "8095:8095"
+    environment:
+      POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
+      USERS_PORT: :8095
+      JWT_SECRET: development-secret
+      JWT_TTL: 5h
+      ENV: Development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fetcher-network
+    restart: unless-stopped
+
 networks:
   fetcher-network:
     driver: bridge

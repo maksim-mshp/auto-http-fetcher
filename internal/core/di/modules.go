@@ -35,7 +35,7 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 	}
 
 	env := config.Get("ENV", "Development")
-	httpAddr := config.Get("MODULES_ADDR", ":8090")
+	httpAddr := config.Get("MODULES_PORT", ":8090")
 	postgresURL := config.MustGet("POSTGRES_URL")
 	kafkaBroker := config.MustGet("KAFKA_BROKER")
 	kafkaTopic := config.MustGet("KAFKA_TOPIC_SCHEDULE_REQUEST")
