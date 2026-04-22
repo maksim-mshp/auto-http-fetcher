@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 
 	"auto-http-fetcher/internal/core/config"
@@ -26,27 +27,37 @@ func main() {
 
 	analyticsAddr := config.Get("ANALYTICS_ADDR", "localhost:8080")
 	mainMux.HandleFunc("/api/v1/analytics", func(w http.ResponseWriter, r *http.Request) {
-		url := "http://" + analyticsAddr + "/api/v1/analytics"
-		req, err := http.NewRequest(r.Method, url, r.Body)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		req.Header = r.Header
+		proxy := httputil.NewSingleHostReverseProxy(&url.URL{
+			Scheme: "http",
+			Host:   analyticsAddr,
+		})
+		proxy.ServeHTTP(w, r)
+	})
 
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer resp.Body.Close()
+	modulesAddr := config.Get("MODULES_ADDR", "localhost:8090")
+	mainMux.HandleFunc("/api/v1/module/", func(w http.ResponseWriter, r *http.Request) {
+		proxy := httputil.NewSingleHostReverseProxy(&url.URL{
+			Scheme: "http",
+			Host:   modulesAddr,
+		})
+		proxy.ServeHTTP(w, r)
+	})
 
-		for k, v := range resp.Header {
-			w.Header()[k] = v
-		}
-		w.WriteHeader(resp.StatusCode)
-		io.Copy(w, resp.Body)
+	mainMux.HandleFunc("/api/v1/modules/", func(w http.ResponseWriter, r *http.Request) {
+		proxy := httputil.NewSingleHostReverseProxy(&url.URL{
+			Scheme: "http",
+			Host:   modulesAddr,
+		})
+		proxy.ServeHTTP(w, r)
+	})
+
+	usersAddr := config.Get("USERS_ADDR", "localhost:8095")
+	mainMux.HandleFunc("/api/v1/auth/", func(w http.ResponseWriter, r *http.Request) {
+		proxy := httputil.NewSingleHostReverseProxy(&url.URL{
+			Scheme: "http",
+			Host:   usersAddr,
+		})
+		proxy.ServeHTTP(w, r)
 	})
 
 	grpcMux := runtime.NewServeMux()

@@ -197,6 +197,8 @@ services:
     environment:
       FETCHER_ADDR: fetcher:50051
       ANALYTICS_ADDR: analytics:8080
+      USERS_ADDR: users:8095
+      MODULES_ADDR: modules:8090
     ports:
       - "8081:8081"
     depends_on:
