@@ -24,7 +24,6 @@ func TestAnalyticsService_Get_FromCache(t *testing.T) {
 		Addr: mr.Addr(),
 	})
 
-	// Кладем данные в кэш
 	expectedAnalytics := &domain.Analytics{
 		TotalCalls:   100,
 		SuccessCalls: 80,
