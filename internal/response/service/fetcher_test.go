@@ -19,7 +19,7 @@ import (
 func TestFetch_Success(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"success":true}`))
+		_, _ = w.Write([]byte(`{"success":true}`))
 	}))
 	defer server.Close()
 
@@ -59,7 +59,7 @@ func TestFetch_Success(t *testing.T) {
 func TestFetch_Non200StatusCode(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`not found`))
+		_, _ = w.Write([]byte(`not found`))
 	}))
 	defer server.Close()
 
