@@ -1,11 +1,22 @@
 stages:
   - lint
+  - build
+  - test
+
+variables:
+  GO_VERSION: "1.25.3"
+  GOPATH: "$CI_PROJECT_DIR/.go"
+  GOCACHE: "$CI_PROJECT_DIR/.cache/go-build"
+  GOMODCACHE: "$CI_PROJECT_DIR/.go/pkg/mod"
+  GOLANGCI_LINT_CACHE: "$CI_PROJECT_DIR/.cache/golangci-lint"
+  CGO_ENABLED: "0"
+  GOOS: "linux"
 
 .go_template:
-  image: golang:1.25
+  image: golang:${GO_VERSION}-alpine
   before_script:
+    - apk add --no-cache git make
     - go mod download
-    - make install-deps
     - export PATH="$PATH:$(go env GOPATH)/bin"
 
 cache:
@@ -14,10 +25,49 @@ cache:
       - go.sum
       - go.mod
   paths:
-    - $GOPATH/pkg/mod
+    - .go/pkg/mod/
+    - .cache/go-build/
+    - .cache/golangci-lint/
   policy: pull-push
 
 lint:
   extends: .go_template
   stage: lint
-  script: make lint
+  script:
+    - make install-lint-deps
+    - make lint
+
+test:
+  extends: .go_template
+  stage: test
+  needs:
+    - job: build-services
+      artifacts: false
+  script:
+    - make install-test-deps
+    - make test
+    - make coverage-check COVERAGE_THRESHOLD=0
+    - make service-coverage-check COVERAGE_THRESHOLD=30
+  coverage: '/Total coverage:\s+\d+(?:\.\d+)?%/'
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: reports/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/coverage.xml
+    paths:
+      - reports/
+      - coverage/
+
+build-services:
+  extends: .go_template
+  stage: build
+  script:
+    - make build
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - bin/
