@@ -10,9 +10,11 @@ import (
 	moduleHandlers "auto-http-fetcher/internal/module/infra/http/handlers"
 	"auto-http-fetcher/internal/module/infra/http/router"
 	deadLetterQueue "auto-http-fetcher/internal/module/infra/kafka/dlq"
-	webhookLoader "auto-http-fetcher/internal/module/infra/loader"
 	modulePG "auto-http-fetcher/internal/module/infra/postgres"
 	moduleService "auto-http-fetcher/internal/module/service"
+	webhookHandlers "auto-http-fetcher/internal/webhook/infra/http/handlers"
+	webhookPG "auto-http-fetcher/internal/webhook/infra/postgres"
+	webhookService "auto-http-fetcher/internal/webhook/service"
 	"errors"
 	"os"
 	"os/signal"
@@ -26,7 +28,6 @@ import (
 
 type ModulesApp struct {
 	httpServer *http.Server
-	loader     *webhookLoader.WebhookLoader
 	logger     *slog.Logger
 	closer     *closer.Closer
 }
@@ -37,7 +38,7 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 	}
 
 	env := config.Get("ENV", "Development")
-	httpAddr := config.Get("MODULES_ADDR", ":8090")
+	httpAddr := config.Get("MODULES_PORT", ":8090")
 	postgresURL := config.MustGet("POSTGRES_URL")
 	kafkaBroker := config.MustGet("KAFKA_BROKER")
 	kafkaTopic := config.MustGet("KAFKA_TOPIC_SCHEDULE_REQUEST")
@@ -57,6 +58,7 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 	}
 
 	moduleRepo := modulePG.NewPGModuleRepo(pool)
+	webhookRepo := webhookPG.NewPGWebhookRepo(pool)
 
 	kafka, err := kafkaProducer.NewProducer([]string{kafkaBroker}, kafkaTopic)
 	if err != nil {
@@ -65,14 +67,14 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 
 	dlq := deadLetterQueue.NewDeadLetterQueue(logs, kafka)
 
-	loader := webhookLoader.NewWebhookLoader(logs, pool, kafka, dlq)
-
 	moduleServ := moduleService.NewModuleService(logs, kafka, dlq, moduleRepo)
+	webhookServ := webhookService.NewWebhookService(logs, kafka, dlq, webhookRepo)
 	jwt := security.NewJWTService(jwtSecret, jwtTTL*time.Hour)
 
 	moduleHandles := moduleHandlers.NewModuleHandlers(logs, *moduleServ)
+	webhookHandles := webhookHandlers.NewWebhookHandlers(logs, *webhookServ)
 
-	moduleRouter := router.GetModulesRouter(logs, jwt, moduleHandles)
+	moduleRouter := router.GetModulesRouter(logs, jwt, moduleHandles, webhookHandles)
 
 	server := &http.Server{
 		Addr:    httpAddr,
@@ -99,13 +101,10 @@ func NewModulesApp(ctx context.Context) (*ModulesApp, error) {
 		return nil, err
 	}
 
-	return &ModulesApp{logger: logs, closer: clsr, httpServer: server, loader: loader}, nil
+	return &ModulesApp{logger: logs, closer: clsr, httpServer: server}, nil
 }
 
 func (app *ModulesApp) Start(ctx context.Context) error {
-	if err := app.loader.Load(ctx); err != nil {
-		return err
-	}
 
 	errCh := make(chan error, 1)
 	sigCh := make(chan os.Signal, 1)

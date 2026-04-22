@@ -10,7 +10,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./internal/core/postgres/migrations:/docker-entrypoint-initdb.d:ro
     networks:
       - fetcher-network
     healthcheck:
@@ -55,7 +54,7 @@ services:
     networks:
       - fetcher-network
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -75,6 +74,8 @@ services:
       ANALYTICS_TTL: 60
       ENV: Development
     depends_on:
+      migrations:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       redis:
@@ -96,11 +97,18 @@ services:
       GRPC_PORT: :50051
       ENV: Development
     depends_on:
+      migrations:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
     networks:
       - fetcher-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "sh", "-c", "echo | nc localhost 50051"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   scheduler:
     image: scheduler:latest
@@ -116,6 +124,8 @@ services:
       FETCHER_GRPC_ADDR: fetcher:50051
       ENV: Development
     depends_on:
+      migrations:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       kafka:
@@ -143,6 +153,8 @@ services:
       JWT_TTL: 5h
       ENV: Development
     depends_on:
+      migrations:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       kafka:
@@ -152,6 +164,63 @@ services:
     networks:
       - fetcher-network
     restart: unless-stopped
+
+  users:
+    image: users:latest
+    container_name: auto-http-fetcher-users
+    build:
+      context: .
+      dockerfile: cmd/users/Dockerfile
+    ports:
+      - "8095:8095"
+    environment:
+      POSTGRES_URL: postgres://postgres:postgres@postgres:5432/auto-http-fetcher?sslmode=disable
+      USERS_PORT: :8095
+      JWT_SECRET: development-secret
+      JWT_TTL: 5h
+      ENV: Development
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    networks:
+      - fetcher-network
+    restart: unless-stopped
+
+  gateway:
+    image: gateway:latest
+    container_name: auto-http-fetcher-gateway
+    build:
+      context: .
+      dockerfile: cmd/gateway/Dockerfile
+    environment:
+      FETCHER_ADDR: fetcher:50051
+      ANALYTICS_ADDR: analytics:8080
+      USERS_ADDR: users:8095
+      MODULES_ADDR: modules:8090
+    ports:
+      - "8081:8081"
+    depends_on:
+      fetcher:
+        condition: service_started
+    networks:
+      - fetcher-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrations:
+    build:
+      context: .
+      dockerfile: cmd/migrations/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fetcher-network
 
 networks:
   fetcher-network:

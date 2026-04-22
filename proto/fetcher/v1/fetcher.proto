@@ -2,32 +2,34 @@ syntax = "proto3";
 
 package fetcher.v1;
 
+import "google/api/annotations.proto";
+
 option go_package = "auto-http-fetcher/proto/fetcher/v1";
 
 service FetcherService {
-    rpc Fetch(FetchRequest) returns (FetchResponse);
+    rpc Fetch(FetchRequest) returns (FetchResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/fetch"
+            body: "*"
+        };
+    }
 }
 
 message FetchRequest {
-  int64 id = 1;
-  string description = 2;
-
-  int64 interval_ms = 3;
-  int64 timeout_ms = 4;
-
-  string url = 5;
-  string method = 6;
-
-  map<string, HeaderValues> headers = 7;
-
-  bytes body = 8;
-  string type = 9;
+    int64 id = 1;
+    string description = 2;
+    int64 interval_ms = 3;
+    int64 timeout_ms = 4;
+    string url = 5;
+    string method = 6;
+    map<string, HeaderValues> headers = 7;
+    bytes body = 8;
+    string type = 9;
 }
 
 message HeaderValues {
-  repeated string values = 1;
+    repeated string values = 1;
 }
-
 
 message FetchResponse {
     int64 attempt = 1;

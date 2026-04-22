@@ -31,7 +31,7 @@ func NewUsersApp(ctx context.Context) (*UsersApp, error) {
 	}
 
 	env := config.Get("ENV", "Development")
-	httpAddr := config.Get("USERS_ADDR", ":8095")
+	httpAddr := config.Get("USERS_PORT", ":8095")
 	postgresURL := config.MustGet("POSTGRES_URL")
 
 	jwtSecret := config.MustGet("JWT_SECRET")

@@ -61,3 +61,7 @@ func WebhookToDTO(w *domain.Webhook) *WebhookDTO {
 		URL:         w.URL.String(),
 	}
 }
+
+type WebhookDTORequestResponse struct {
+	Webhook *WebhookDTO `json:"webhook"`
+}
