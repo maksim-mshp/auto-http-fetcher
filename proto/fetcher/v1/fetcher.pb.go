@@ -7,6 +7,7 @@
 package v1
 
 import (
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -222,7 +223,7 @@ var File_proto_fetcher_v1_fetcher_proto protoreflect.FileDescriptor
 const file_proto_fetcher_v1_fetcher_proto_rawDesc = "" +
 	"\n" +
 	"\x1eproto/fetcher/v1/fetcher.proto\x12\n" +
-	"fetcher.v1\"\xe9\x02\n" +
+	"fetcher.v1\x1a\x1cgoogle/api/annotations.proto\"\xe9\x02\n" +
 	"\fFetchRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1f\n" +
@@ -241,9 +242,9 @@ const file_proto_fetcher_v1_fetcher_proto_rawDesc = "" +
 	"\fHeaderValues\x12\x16\n" +
 	"\x06values\x18\x01 \x03(\tR\x06values\")\n" +
 	"\rFetchResponse\x12\x18\n" +
-	"\aattempt\x18\x01 \x01(\x03R\aattempt2N\n" +
-	"\x0eFetcherService\x12<\n" +
-	"\x05Fetch\x12\x18.fetcher.v1.FetchRequest\x1a\x19.fetcher.v1.FetchResponseB$Z\"auto-http-fetcher/proto/fetcher/v1b\x06proto3"
+	"\aattempt\x18\x01 \x01(\x03R\aattempt2h\n" +
+	"\x0eFetcherService\x12V\n" +
+	"\x05Fetch\x12\x18.fetcher.v1.FetchRequest\x1a\x19.fetcher.v1.FetchResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/api/v1/fetchB$Z\"auto-http-fetcher/proto/fetcher/v1b\x06proto3"
 
 var (
 	file_proto_fetcher_v1_fetcher_proto_rawDescOnce sync.Once
