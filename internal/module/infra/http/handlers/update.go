@@ -9,6 +9,22 @@ import (
 	"net/http"
 )
 
+// Update godoc
+// @Summary		Обновить модуль
+// @Description	Полностью обновляет данные модуля. Модуль должен принадлежать текущему пользователю.
+// @Tags		Модули
+// @Accept		json
+// @Produce		json
+// @Param		request body ModuleRequestResponse true "Данные модуля"
+// @Success		200 {object} ModuleRequestResponse
+// @Failure		400 {object} APIError
+// @Failure		401 {string} string
+// @Failure		403 {object} APIError
+// @Failure		404 {object} APIError
+// @Failure		415 {object} APIError
+// @Failure		500 {object} APIError
+// @Router		/module/ [put]
+// @Security	Bearer
 func (m *ModuleHandlers) Update(w http.ResponseWriter, r *http.Request) {
 	m.logger.Debug("module update endpoint called")
 

@@ -1,0 +1,790 @@
+components:
+  schemas:
+    auto-http-fetcher_internal_module_infra_http_handlers.APIError:
+      properties:
+        details:
+          additionalProperties: {}
+          type: object
+        error:
+          type: string
+      type: object
+    auto-http-fetcher_internal_user_infra_http.APIError:
+      properties:
+        details:
+          additionalProperties: {}
+          type: object
+        error:
+          type: string
+      type: object
+    auto-http-fetcher_internal_webhook_infra_http_handlers.APIError:
+      properties:
+        details:
+          additionalProperties: {}
+          type: object
+        error:
+          type: string
+      type: object
+    grpc.FetchHeaderValues:
+      properties:
+        values:
+          items:
+            type: string
+          type: array
+          uniqueItems: false
+      type: object
+    grpc.FetchRequest:
+      properties:
+        body:
+          format: byte
+          type: string
+        description:
+          type: string
+        headers:
+          additionalProperties:
+            $ref: '#/components/schemas/grpc.FetchHeaderValues'
+          type: object
+        id:
+          type: integer
+        intervalMs:
+          type: integer
+        method:
+          enum:
+          - GET
+          - HEAD
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - CONNECT
+          - OPTIONS
+          - TRACE
+          type: string
+        timeoutMs:
+          type: integer
+        type:
+          enum:
+          - Manual
+          - Scheduled
+          type: string
+        url:
+          type: string
+      type: object
+    grpc.FetchResponse:
+      properties:
+        attempt:
+          type: integer
+      type: object
+    grpc.GatewayError:
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+      type: object
+    handlers.ModuleList:
+      properties:
+        modules:
+          items:
+            $ref: '#/components/schemas/http.ModuleDTO'
+          type: array
+          uniqueItems: false
+      type: object
+    handlers.ModuleRequestResponse:
+      properties:
+        module:
+          $ref: '#/components/schemas/http.ModuleDTO'
+      type: object
+    handlers.WebhookDTORequestResponse:
+      properties:
+        webhook:
+          $ref: '#/components/schemas/http.WebhookDTO'
+      type: object
+    http.AnalyticsResponse:
+      properties:
+        avgAttempts:
+          type: number
+        avgDuration:
+          type: integer
+        failedCalls:
+          type: integer
+        maxDuration:
+          type: integer
+        minDuration:
+          type: integer
+        statusStats:
+          additionalProperties:
+            type: number
+          type: object
+        successCalls:
+          type: integer
+        totalCalls:
+          type: integer
+      type: object
+    http.ModuleDTO:
+      properties:
+        description:
+          type: string
+        id:
+          type: integer
+        name:
+          type: string
+        owner_id:
+          type: integer
+        webhooks:
+          items:
+            $ref: '#/components/schemas/http.WebhookDTO'
+          type: array
+          uniqueItems: false
+      type: object
+    http.UserLoginRequest:
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      type: object
+    http.UserLoginResponse:
+      properties:
+        token:
+          type: string
+      type: object
+    http.UserRegisterRequest:
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+      type: object
+    http.UserRegisterResponse:
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+      type: object
+    http.WebhookDTO:
+      properties:
+        body:
+          format: byte
+          type: string
+        description:
+          type: string
+        headers:
+          additionalProperties:
+            items:
+              type: string
+            type: array
+          type: object
+        id:
+          type: integer
+        interval:
+          type: string
+        method:
+          enum:
+          - GET
+          - HEAD
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - CONNECT
+          - OPTIONS
+          - TRACE
+          type: string
+        module_id:
+          type: integer
+        timeout:
+          type: string
+        url:
+          type: string
+      type: object
+  securitySchemes:
+    Bearer:
+      description: 'Формат: `Bearer {token}`'
+      in: header
+      name: Authorization
+      type: apiKey
+externalDocs:
+  description: ""
+  url: ""
+info:
+  description: 'Единая точка входа в сервис: авторизация, модули, вебхуки, аналитика
+    и ручной запуск HTTP-запросов.'
+  title: Auto HTTP Fetcher API
+  version: "1.0"
+openapi: 3.1.0
+paths:
+  /analytics:
+    get:
+      description: 'Возвращает агрегированные метрики по выполненным HTTP-запросам:
+        количество вызовов, успешность, статусы, длительность и попытки.'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http.AnalyticsResponse'
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Internal Server Error
+      summary: Получить аналитику
+      tags:
+      - Аналитика
+  /auth/login:
+    post:
+      description: Проверяет email и пароль, затем возвращает JWT для защищённых методов.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/http.UserLoginRequest'
+                description: Учётные данные
+                summary: request
+        description: Учётные данные
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http.UserLoginResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
+          description: Bad Request
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
+          description: Not Found
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
+          description: Internal Server Error
+      summary: Войти в аккаунт
+      tags:
+      - Авторизация
+  /auth/register:
+    post:
+      description: Создаёт пользователя и возвращает публичные данные созданного аккаунта.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/http.UserRegisterRequest'
+                description: Данные пользователя
+                summary: request
+        description: Данные пользователя
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http.UserRegisterResponse'
+          description: Created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
+          description: Bad Request
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
+          description: Conflict
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_user_infra_http.APIError'
+          description: Internal Server Error
+      summary: Зарегистрировать пользователя
+      tags:
+      - Авторизация
+  /fetch:
+    post:
+      description: Запускает один HTTP-запрос по переданным параметрам вебхука через
+        gRPC-gateway.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/grpc.FetchRequest'
+                description: Параметры запроса
+                summary: request
+        description: Параметры запроса
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/grpc.FetchResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/grpc.GatewayError'
+          description: Bad Request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/grpc.GatewayError'
+          description: Internal Server Error
+      summary: Выполнить HTTP-запрос вручную
+      tags:
+      - Запуск
+  /module/:
+    post:
+      description: Создаёт модуль пользователя вместе со списком вложенных вебхуков.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/handlers.ModuleRequestResponse'
+                description: Данные модуля
+                summary: request
+        description: Данные модуля
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handlers.ModuleRequestResponse'
+          description: Created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Not Found
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Создать модуль
+      tags:
+      - Модули
+    put:
+      description: Полностью обновляет данные модуля. Модуль должен принадлежать текущему
+        пользователю.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/handlers.ModuleRequestResponse'
+                description: Данные модуля
+                summary: request
+        description: Данные модуля
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handlers.ModuleRequestResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Not Found
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Обновить модуль
+      tags:
+      - Модули
+  /module/{id}:
+    delete:
+      description: Удаляет модуль текущего пользователя по идентификатору.
+      parameters:
+      - description: ID модуля
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Удалить модуль
+      tags:
+      - Модули
+    get:
+      description: Возвращает один модуль текущего пользователя вместе с его вебхуками.
+      parameters:
+      - description: ID модуля
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handlers.ModuleRequestResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Получить модуль
+      tags:
+      - Модули
+  /module/{module_id}/webhook/:
+    post:
+      description: Добавляет вебхук в модуль текущего пользователя.
+      parameters:
+      - description: ID модуля
+        in: path
+        name: module_id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/handlers.WebhookDTORequestResponse'
+                description: Данные вебхука
+                summary: request
+        description: Данные вебхука
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handlers.WebhookDTORequestResponse'
+          description: Created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Not Found
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Создать вебхук
+      tags:
+      - Вебхуки
+    put:
+      description: Полностью обновляет вебхук внутри модуля текущего пользователя.
+      parameters:
+      - description: ID модуля
+        in: path
+        name: module_id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/handlers.WebhookDTORequestResponse'
+                description: Данные вебхука
+                summary: request
+        description: Данные вебхука
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handlers.WebhookDTORequestResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Not Found
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Обновить вебхук
+      tags:
+      - Вебхуки
+  /module/{module_id}/webhook/{webhook_id}:
+    delete:
+      description: Удаляет вебхук из модуля текущего пользователя.
+      parameters:
+      - description: ID модуля
+        in: path
+        name: module_id
+        required: true
+        schema:
+          type: integer
+      - description: ID вебхука
+        in: path
+        name: webhook_id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Conflict
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_webhook_infra_http_handlers.APIError'
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Удалить вебхук
+      tags:
+      - Вебхуки
+  /modules/:
+    get:
+      description: Возвращает все модули текущего пользователя.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handlers.ModuleList'
+          description: OK
+        "401":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Unauthorized
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auto-http-fetcher_internal_module_infra_http_handlers.APIError'
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Получить список модулей
+      tags:
+      - Модули
+servers:
+- url: /api/v1

@@ -9,6 +9,16 @@ import (
 	"net/http"
 )
 
+// GetList godoc
+// @Summary		Получить список модулей
+// @Description	Возвращает все модули текущего пользователя.
+// @Tags		Модули
+// @Produce		json
+// @Success		200 {object} ModuleList
+// @Failure		401 {string} string
+// @Failure		500 {object} APIError
+// @Router		/modules/ [get]
+// @Security	Bearer
 func (m *ModuleHandlers) GetList(w http.ResponseWriter, r *http.Request) {
 	m.logger.Debug("module list endpoint called")
 

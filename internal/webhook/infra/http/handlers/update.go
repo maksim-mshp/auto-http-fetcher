@@ -9,6 +9,22 @@ import (
 	"strconv"
 )
 
+// Update godoc
+// @Summary		Обновить вебхук
+// @Description	Полностью обновляет вебхук внутри модуля текущего пользователя.
+// @Tags		Вебхуки
+// @Accept		json
+// @Produce		json
+// @Param		module_id path int true "ID модуля"
+// @Param		request body WebhookDTORequestResponse true "Данные вебхука"
+// @Success		200 {object} WebhookDTORequestResponse
+// @Failure		400 {object} APIError
+// @Failure		401 {string} string
+// @Failure		404 {object} APIError
+// @Failure		415 {object} APIError
+// @Failure		500 {object} APIError
+// @Router		/module/{module_id}/webhook/ [put]
+// @Security	Bearer
 func (wh *WebhookHandlers) Update(w http.ResponseWriter, r *http.Request) {
 	wh.logger.Debug("webhook update endpoint called")
 

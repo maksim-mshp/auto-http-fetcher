@@ -16,9 +16,9 @@ type WebhookDTO struct {
 	Timeout  string `json:"timeout"`
 
 	URL     string              `json:"url"`
-	Method  string              `json:"method"`
+	Method  string              `json:"method" enums:"GET,HEAD,POST,PUT,PATCH,DELETE,CONNECT,OPTIONS,TRACE"`
 	Headers map[string][]string `json:"headers"`
-	Body    []byte              `json:"body"`
+	Body    []byte              `json:"body" swaggertype:"string" format:"byte"`
 }
 
 func (w *WebhookDTO) ToDomain() (*domain.Webhook, error) {

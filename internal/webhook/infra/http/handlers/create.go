@@ -10,6 +10,22 @@ import (
 	"strconv"
 )
 
+// Create godoc
+// @Summary		Создать вебхук
+// @Description	Добавляет вебхук в модуль текущего пользователя.
+// @Tags		Вебхуки
+// @Accept		json
+// @Produce		json
+// @Param		module_id path int true "ID модуля"
+// @Param		request body WebhookDTORequestResponse true "Данные вебхука"
+// @Success		201 {object} WebhookDTORequestResponse
+// @Failure		400 {object} APIError
+// @Failure		401 {string} string
+// @Failure		404 {object} APIError
+// @Failure		415 {object} APIError
+// @Failure		500 {object} APIError
+// @Router		/module/{module_id}/webhook/ [post]
+// @Security	Bearer
 func (wh *WebhookHandlers) Create(w http.ResponseWriter, r *http.Request) {
 	wh.logger.Debug("webhook create endpoint called")
 

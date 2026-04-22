@@ -10,6 +10,19 @@ import (
 	"strconv"
 )
 
+// GetOne godoc
+// @Summary		Получить модуль
+// @Description	Возвращает один модуль текущего пользователя вместе с его вебхуками.
+// @Tags		Модули
+// @Produce		json
+// @Param		id path int true "ID модуля"
+// @Success		200 {object} ModuleRequestResponse
+// @Failure		400 {object} APIError
+// @Failure		401 {string} string
+// @Failure		404 {object} APIError
+// @Failure		500 {object} APIError
+// @Router		/module/{id} [get]
+// @Security	Bearer
 func (m *ModuleHandlers) GetOne(w http.ResponseWriter, r *http.Request) {
 	m.logger.Debug("module get one endpoint called")
 

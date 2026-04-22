@@ -1,0 +1,23 @@
+package main
+
+import (
+	"embed"
+	"net/http"
+
+	httpSwagger "github.com/swaggo/http-swagger/v2"
+)
+
+//go:embed api/openapi.json api/openapi.yml
+var openAPIFS embed.FS
+
+func RegisterSwagger(mux *http.ServeMux) {
+	mux.HandleFunc("/swagger/openapi.json", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFileFS(w, r, openAPIFS, "api/openapi.json")
+	})
+	mux.HandleFunc("/swagger/openapi.yml", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFileFS(w, r, openAPIFS, "api/openapi.yml")
+	})
+	mux.Handle("/swagger/", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/openapi.json"),
+	))
+}
