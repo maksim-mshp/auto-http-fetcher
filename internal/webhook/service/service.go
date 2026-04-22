@@ -9,8 +9,8 @@ import (
 type WebhookService struct {
 	logger      *slog.Logger
 	webhookRepo WebhookRepository
-	kafka       *coreKafka.Producer
-	dlq         *dlq.DeadLetterQueue
+	kafka       coreKafka.ProducerInterface
+	dlq         dlq.DLQ
 }
 
 func NewWebhookService(logger *slog.Logger, kafka *coreKafka.Producer, dlq *dlq.DeadLetterQueue,
