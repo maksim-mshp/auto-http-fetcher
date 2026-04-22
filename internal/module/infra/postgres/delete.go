@@ -2,10 +2,11 @@ package postgres
 
 import (
 	coreHttp "auto-http-fetcher/internal/core/http"
-	"errors"
-	"github.com/jackc/pgx/v5/pgconn"
 
 	"context"
+	"errors"
+
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 func (r *PGModuleRepo) DeleteModule(ctx context.Context, moduleID, userID int) error {
