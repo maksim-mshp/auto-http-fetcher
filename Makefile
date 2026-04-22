@@ -1,4 +1,4 @@
-SHELL := sh
+SHELL := /bin/sh
 
 SERVICES ?= analytics fetcher modules scheduler users
 BIN_DIR ?= bin
@@ -30,19 +30,20 @@ lint:
 	@golangci-lint run ./...
 
 openapi:
-	@swag init -g main.go --dir cmd/gateway,internal/analytics/domain,internal/analytics/infra/http,internal/core/http,internal/module/infra/http,internal/module/infra/http/handlers,internal/response/infra/grpc,internal/user/infra/http,internal/webhook/infra/http,internal/webhook/infra/http/handlers --parseInternal --parseDependency --output cmd/gateway/api --outputTypes yaml,json --v3.1
-	@powershell -NoProfile -Command "Move-Item -Force cmd/gateway/api/swagger.yaml cmd/gateway/api/openapi.yml; Move-Item -Force cmd/gateway/api/swagger.json cmd/gateway/api/openapi.json"
+	@swag init -g main.go --dir cmd/gateway,internal/analytics/domain,internal/analytics/infra/http,internal/core/http,internal/module/infra/http,internal/module/infra/http/handlers,internal/response/infra/grpc,internal/user/infra/http,internal/webhook/infra/http,internal/webhook/infra/http/handlers --parseInternal --parseDependency --output api --outputTypes yaml,json --v3.1
+	@mv -f api/swagger.yaml api/openapi.yml
+	@mv -f api/swagger.json api/openapi.json
 
 build: $(SERVICES:%=build-%)
 
 $(SERVICES:%=build-%): build-%:
-	@sh -c "mkdir -p $(BIN_DIR)"
+	@mkdir -p $(BIN_DIR)
 	@go build $(GO_BUILD_FLAGS) -ldflags="$(GO_LDFLAGS)" -o $(BIN_DIR)/$* ./cmd/$*
 
 test:
-	@sh -c "mkdir -p $(REPORTS_DIR) $(COVERAGE_DIR)"
+	@mkdir -p $(REPORTS_DIR) $(COVERAGE_DIR)
 	@gotestsum --junitfile $(REPORTS_DIR)/junit.xml --format standard-verbose -- -covermode=count "-coverprofile=$(COVERAGE_PROFILE)" $(GO_PACKAGES)
-	@"$(MAKE)" coverage
+	@$(MAKE) coverage
 
 coverage:
 	@go tool cover "-func=$(COVERAGE_PROFILE)" > $(COVERAGE_TEXT)
@@ -59,4 +60,4 @@ service-coverage-check:
 	@COVERAGE_DIR="$(COVERAGE_DIR)" COVERAGE_THRESHOLD="$(COVERAGE_THRESHOLD)" SERVICES="$(SERVICES)" sh ./scripts/check-service-coverage.sh
 
 clean:
-	@sh -c "rm -rf $(BIN_DIR) $(REPORTS_DIR) $(COVERAGE_DIR)"
+	@rm -rf $(BIN_DIR) $(REPORTS_DIR) $(COVERAGE_DIR)
