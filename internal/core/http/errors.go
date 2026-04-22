@@ -21,6 +21,11 @@ var (
 		ErrorCode:  "INTERNAL_ERROR",
 	}
 
+	ErrUnauthorized = APIError{
+		StatusCode: http.StatusUnauthorized,
+		ErrorCode:  "UNAUTHORIZED",
+	}
+
 	ErrInvalidBody = APIError{
 		StatusCode: http.StatusBadRequest,
 		ErrorCode:  "INVALID_BODY",
@@ -36,11 +41,6 @@ var (
 		ErrorCode:  "USER_ALREADY_EXISTS",
 	}
 
-	ErrInvalidEmail = APIError{
-		StatusCode: http.StatusBadRequest,
-		ErrorCode:  "INVALID_EMAIL",
-	}
-
 	ErrInvalidUserID = APIError{
 		StatusCode: http.StatusBadRequest,
 		ErrorCode:  "INVALID_USER_ID",
@@ -49,6 +49,16 @@ var (
 	ErrVerificationFailed = APIError{
 		StatusCode: http.StatusForbidden,
 		ErrorCode:  "VERIFICATION_FAILED",
+	}
+
+	ErrPermissionDenied = APIError{
+		StatusCode: http.StatusForbidden,
+		ErrorCode:  "PERMISSION_DENIED",
+	}
+
+	ErrModuleNotFound = APIError{
+		StatusCode: http.StatusNotFound,
+		ErrorCode:  "MODULE_NOT_FOUND",
 	}
 )
 

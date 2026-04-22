@@ -8,6 +8,7 @@ import (
 
 type Webhook struct {
 	ID          int
+	ModuleID    int
 	Description string
 
 	Interval time.Duration

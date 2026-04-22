@@ -1,9 +1,13 @@
 package logger
 
 import (
+	"io"
+	"log"
 	"log/slog"
 	"os"
 )
+
+const logFile = "./app.log"
 
 func New(env string) *slog.Logger {
 	var level slog.Level
@@ -13,7 +17,12 @@ func New(env string) *slog.Logger {
 		level = slog.LevelDebug
 	}
 
-	return slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+	file, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalln("Failed to open log file", logFile, ":", err)
+	}
+
+	return slog.New(slog.NewJSONHandler(io.MultiWriter(file, os.Stdout), &slog.HandlerOptions{
 		Level: level,
 	}))
 }

@@ -53,7 +53,6 @@ func ParseJSONBody(logger *slog.Logger, r *http.Request, data any) *APIError {
 		}
 		return &ErrInvalidBody
 	}
-
 	return nil
 }
 
