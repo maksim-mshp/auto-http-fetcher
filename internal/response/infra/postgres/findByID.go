@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (pg *PGResponseRepo) FindByID(ctx context.Context, id int) (*domain.Response, error) {
+func (pg *PGResponseRepo) FindByID(ctx context.Context, id string) (*domain.Response, error) {
 	query := `SELECT id, webhook_id, type, status, status_code, body, headers, started_at, finished_at, attempt, duration FROM responses WHERE id = $1`
 
 	var response domain.Response

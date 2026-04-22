@@ -1,0 +1,22 @@
+package main
+
+import (
+	"auto-http-fetcher/internal/core/di"
+
+	"context"
+	"log"
+)
+
+func main() {
+	ctx := context.Background()
+
+	app, err := di.NewUsersApp(ctx)
+	if err != nil {
+		log.Printf("error initializing module service: %v", err)
+		return
+	}
+	if err = app.Start(ctx); err != nil {
+		log.Printf("error starting app: %v", err)
+	}
+	log.Println("app shutdown gracefully")
+}
