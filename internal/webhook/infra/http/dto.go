@@ -8,17 +8,17 @@ import (
 )
 
 type WebhookDTO struct {
-	ID          int    `json:"id" example:"1"`
-	ModuleID    int    `json:"module_id" example:"1"`
-	Description string `json:"description" example:"Ping API"`
+	ID          int    `json:"id"`
+	ModuleID    int    `json:"module_id"`
+	Description string `json:"description"`
 
-	Interval string `json:"interval" example:"1m0s"`
-	Timeout  string `json:"timeout" example:"5s"`
+	Interval string `json:"interval"`
+	Timeout  string `json:"timeout"`
 
-	URL     string              `json:"url" example:"https://example.com/health"`
-	Method  string              `json:"method" enums:"GET,HEAD,POST,PUT,PATCH,DELETE,CONNECT,OPTIONS,TRACE" example:"GET"`
+	URL     string              `json:"url"`
+	Method  string              `json:"method" enums:"GET,HEAD,POST,PUT,PATCH,DELETE,CONNECT,OPTIONS,TRACE"`
 	Headers map[string][]string `json:"headers"`
-	Body    []byte              `json:"body" swaggertype:"string" format:"byte" example:""`
+	Body    []byte              `json:"body" swaggertype:"string" format:"byte"`
 }
 
 func (w *WebhookDTO) ToDomain() (*domain.Webhook, error) {

@@ -8,7 +8,6 @@
                         "type": "object"
                     },
                     "error": {
-                        "example": "INVALID_BODY",
                         "type": "string"
                     }
                 },
@@ -21,7 +20,6 @@
                         "type": "object"
                     },
                     "error": {
-                        "example": "INVALID_BODY",
                         "type": "string"
                     }
                 },
@@ -34,7 +32,6 @@
                         "type": "object"
                     },
                     "error": {
-                        "example": "INVALID_BODY",
                         "type": "string"
                     }
                 },
@@ -43,9 +40,6 @@
             "grpc.FetchHeaderValues": {
                 "properties": {
                     "values": {
-                        "example": [
-                            "application/json"
-                        ],
                         "items": {
                             "type": "string"
                         },
@@ -58,12 +52,10 @@
             "grpc.FetchRequest": {
                 "properties": {
                     "body": {
-                        "example": "",
                         "format": "byte",
                         "type": "string"
                     },
                     "description": {
-                        "example": "Health check",
                         "type": "string"
                     },
                     "headers": {
@@ -73,11 +65,9 @@
                         "type": "object"
                     },
                     "id": {
-                        "example": 1,
                         "type": "integer"
                     },
                     "intervalMs": {
-                        "example": 60000,
                         "type": "integer"
                     },
                     "method": {
@@ -92,11 +82,9 @@
                             "OPTIONS",
                             "TRACE"
                         ],
-                        "example": "GET",
                         "type": "string"
                     },
                     "timeoutMs": {
-                        "example": 5000,
                         "type": "integer"
                     },
                     "type": {
@@ -104,11 +92,9 @@
                             "Manual",
                             "Scheduled"
                         ],
-                        "example": "Manual",
                         "type": "string"
                     },
                     "url": {
-                        "example": "https://example.com/health",
                         "type": "string"
                     }
                 },
@@ -117,7 +103,6 @@
             "grpc.FetchResponse": {
                 "properties": {
                     "attempt": {
-                        "example": 1,
                         "type": "integer"
                     }
                 },
@@ -126,11 +111,9 @@
             "grpc.GatewayError": {
                 "properties": {
                     "code": {
-                        "example": 3,
                         "type": "integer"
                     },
                     "message": {
-                        "example": "invalid request body",
                         "type": "string"
                     }
                 },
@@ -166,11 +149,32 @@
             },
             "http.AnalyticsResponse": {
                 "properties": {
+                    "avgAttempts": {
+                        "type": "number"
+                    },
+                    "avgDuration": {
+                        "type": "integer"
+                    },
+                    "failedCalls": {
+                        "type": "integer"
+                    },
+                    "maxDuration": {
+                        "type": "integer"
+                    },
+                    "minDuration": {
+                        "type": "integer"
+                    },
                     "statusStats": {
                         "additionalProperties": {
                             "type": "number"
                         },
                         "type": "object"
+                    },
+                    "successCalls": {
+                        "type": "integer"
+                    },
+                    "totalCalls": {
+                        "type": "integer"
                     }
                 },
                 "type": "object"
@@ -178,19 +182,15 @@
             "http.ModuleDTO": {
                 "properties": {
                     "description": {
-                        "example": "Checks public endpoints",
                         "type": "string"
                     },
                     "id": {
-                        "example": 1,
                         "type": "integer"
                     },
                     "name": {
-                        "example": "Production monitoring",
                         "type": "string"
                     },
                     "owner_id": {
-                        "example": 7,
                         "type": "integer"
                     },
                     "webhooks": {
@@ -206,11 +206,9 @@
             "http.UserLoginRequest": {
                 "properties": {
                     "email": {
-                        "example": "user@example.com",
                         "type": "string"
                     },
                     "password": {
-                        "example": "strong-password",
                         "type": "string"
                     }
                 },
@@ -219,7 +217,6 @@
             "http.UserLoginResponse": {
                 "properties": {
                     "token": {
-                        "example": "eyJhbGciOi...",
                         "type": "string"
                     }
                 },
@@ -228,15 +225,12 @@
             "http.UserRegisterRequest": {
                 "properties": {
                     "email": {
-                        "example": "user@example.com",
                         "type": "string"
                     },
                     "name": {
-                        "example": "Maksim",
                         "type": "string"
                     },
                     "password": {
-                        "example": "strong-password",
                         "type": "string"
                     }
                 },
@@ -245,11 +239,9 @@
             "http.UserRegisterResponse": {
                 "properties": {
                     "email": {
-                        "example": "user@example.com",
                         "type": "string"
                     },
                     "name": {
-                        "example": "Maksim",
                         "type": "string"
                     }
                 },
@@ -258,12 +250,10 @@
             "http.WebhookDTO": {
                 "properties": {
                     "body": {
-                        "example": "",
                         "format": "byte",
                         "type": "string"
                     },
                     "description": {
-                        "example": "Ping API",
                         "type": "string"
                     },
                     "headers": {
@@ -276,11 +266,9 @@
                         "type": "object"
                     },
                     "id": {
-                        "example": 1,
                         "type": "integer"
                     },
                     "interval": {
-                        "example": "1m0s",
                         "type": "string"
                     },
                     "method": {
@@ -295,19 +283,15 @@
                             "OPTIONS",
                             "TRACE"
                         ],
-                        "example": "GET",
                         "type": "string"
                     },
                     "module_id": {
-                        "example": 1,
                         "type": "integer"
                     },
                     "timeout": {
-                        "example": "5s",
                         "type": "string"
                     },
                     "url": {
-                        "example": "https://example.com/health",
                         "type": "string"
                     }
                 },

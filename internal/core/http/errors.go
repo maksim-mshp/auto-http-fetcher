@@ -7,7 +7,7 @@ import (
 
 type APIError struct {
 	StatusCode int            `json:"-"`
-	ErrorCode  string         `json:"error" example:"INVALID_BODY"`
+	ErrorCode  string         `json:"error"`
 	Details    map[string]any `json:"details,omitempty"`
 }
 

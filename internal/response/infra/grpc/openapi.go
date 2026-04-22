@@ -1,26 +1,26 @@
 package grpc
 
 type FetchHeaderValues struct {
-	Values []string `json:"values" example:"application/json"`
+	Values []string `json:"values"`
 }
 
 type FetchRequest struct {
-	ID          int64                        `json:"id" example:"1"`
-	Description string                       `json:"description" example:"Health check"`
-	IntervalMs  int64                        `json:"intervalMs" example:"60000"`
-	TimeoutMs   int64                        `json:"timeoutMs" example:"5000"`
-	URL         string                       `json:"url" example:"https://example.com/health"`
-	Method      string                       `json:"method" enums:"GET,HEAD,POST,PUT,PATCH,DELETE,CONNECT,OPTIONS,TRACE" example:"GET"`
+	ID          int64                        `json:"id"`
+	Description string                       `json:"description"`
+	IntervalMs  int64                        `json:"intervalMs"`
+	TimeoutMs   int64                        `json:"timeoutMs"`
+	URL         string                       `json:"url"`
+	Method      string                       `json:"method" enums:"GET,HEAD,POST,PUT,PATCH,DELETE,CONNECT,OPTIONS,TRACE"`
 	Headers     map[string]FetchHeaderValues `json:"headers"`
-	Body        string                       `json:"body" format:"byte" example:""`
-	Type        string                       `json:"type" enums:"Manual,Scheduled" example:"Manual"`
+	Body        string                       `json:"body" format:"byte"`
+	Type        string                       `json:"type" enums:"Manual,Scheduled"`
 }
 
 type FetchResponse struct {
-	Attempt int64 `json:"attempt" example:"1"`
+	Attempt int64 `json:"attempt"`
 }
 
 type GatewayError struct {
-	Code    int    `json:"code" example:"3"`
-	Message string `json:"message" example:"invalid request body"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
